@@ -1,11 +1,8 @@
-# Data
+# Full/raw data and regenerated detailed outputs
 /data/raw/*.csv
 /data/processed/*.csv
 /data/processed/*.parquet
-
-# Generated outputs
-/outputs/*.csv
-/outputs/*.png
+/outputs/generated/
 
 # Python
 __pycache__/
@@ -15,7 +12,7 @@ venv/
 .env
 .ipynb_checkpoints/
 
-# Power BI temp files
+# Power BI temporary/local files
 *.pbix.autosave
 
 # OS / editors

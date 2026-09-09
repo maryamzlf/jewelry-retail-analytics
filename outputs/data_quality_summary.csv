@@ -1,0 +1,13 @@
+metric,value,pct_of_rows
+transaction_lines,95911,100.0
+source_13_field_rows,90559,94.41982671434977
+source_11_field_rows_normalized,5352,5.580173285650238
+missing_category_id,5352,5.580173285650238
+missing_category_code,15285,15.936649602235406
+missing_brand_code,10137,10.569173504603226
+missing_gender,48168,50.22155957085215
+missing_color,7660,7.986570883423173
+missing_metal,5462,5.694862945856054
+missing_gem,34058,35.51000406626977
+exact_duplicate_rows_in_groups,4887,5.095348812962016
+exact_duplicate_excess_rows,2589,2.6993775479350646

@@ -1,0 +1,12 @@
+metric,value
+transaction_lines,95911.0
+orders,74760.0
+customers,33397.0
+products,9613.0
+gross_sales,33179324.75
+average_order_value,443.81119248261103
+average_item_price,345.9386801305377
+average_items_per_order,1.2829186730872124
+multi_line_order_rate_pct,19.701712145532372
+repeat_customers,8976.0
+repeat_customer_rate_pct,26.876665568763663
