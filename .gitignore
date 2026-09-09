@@ -1,0 +1,25 @@
+# Data
+/data/raw/*.csv
+/data/processed/*.csv
+/data/processed/*.parquet
+
+# Generated outputs
+/outputs/*.csv
+/outputs/*.png
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# Power BI temp files
+*.pbix.autosave
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
