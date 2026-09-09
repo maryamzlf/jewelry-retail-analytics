@@ -113,7 +113,7 @@ Use compact dropdown slicers aligned in the upper-right/header area or in a coll
 - Gem
 - Price Band
 
-**Sync these slicers across Pages 1–3.**
+**Sync these slicers across Pages 1 and 2.** Page 3 uses fixed snapshot RFM segmentation, so transaction slicers must not be presented as dynamically recalculating RFM.
 
 ---
 
@@ -200,6 +200,8 @@ Show:
 
 # Page 3 — Customer & Retention
 
+**Page subtitle:** `Snapshot RFM Segmentation`
+
 **Purpose:** Make customer concentration, repeat behavior and RFM opportunity obvious.
 
 Load the full generated customer table:
@@ -210,12 +212,14 @@ Rename it to `CustomerRFM` and relate:
 
 `CustomerRFM[user_id]` **1 → *** `jewelry_sales[user_id]`
 
-Cross-filter direction: single.
+Cross-filter direction: single, from CustomerRFM to jewelry_sales.
+
+The RFM classification is calculated from the customer's full purchase history relative to the final dataset date. **Do not sync the Date slicer to this page and do not imply that category/product selections dynamically recalculate RFM.** An RFM segment slicer may filter transaction visuals because the relationship flows from CustomerRFM to the fact table.
 
 ## KPI row
 
 Five cards:
-- `[Customers]`
+- `[RFM Customers]`
 - `[Repeat Customers]`
 - `[Repeat Customer Rate]`
 - `[Average Customer Value]`
@@ -337,11 +341,12 @@ Add the note:
 
 # Interaction rules
 
-1. Category, Metal, Gem, Price Band and Date slicers should filter all relevant visuals on Pages 1–3.
+1. Date, Category, Metal, Gem and Price Band slicers are synchronized across Pages 1 and 2.
 2. Selecting a category on Page 1 should cross-filter price-band and product-mix visuals.
-3. RFM segment selection should filter the customer scatter and top-customer table.
-4. Disable interactions where a selection creates misleading denominator changes in share KPIs.
-5. Use report-page tooltips for category and customer segment details when possible.
+3. Page 3 uses snapshot RFM. Do not sync normal transaction slicers to the RFM visuals.
+4. RFM segment selection should filter the customer scatter and top-customer table and may filter transaction visuals through the single-direction CustomerRFM relationship.
+5. Disable interactions where a selection creates misleading denominator changes in share KPIs.
+6. Use report-page tooltips for category and customer segment details when possible.
 
 # Accessibility and portfolio polish
 
