@@ -1,0 +1,80 @@
+name: Sync full Power BI data
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-full-data.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download source dataset from Kaggle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data/raw /tmp/jewelry-source
+          curl -L --fail --retry 3 \
+            'https://www.kaggle.com/api/v1/datasets/download/mkechinov/ecommerce-purchase-history-from-jewelry-store' \
+            -o /tmp/jewelry-source.zip
+          unzip -q -o /tmp/jewelry-source.zip -d /tmp/jewelry-source
+          RAW_FILE="$(find /tmp/jewelry-source -type f -name '*.csv' | head -n 1)"
+          test -n "$RAW_FILE"
+          cp "$RAW_FILE" data/raw/jewelry.csv
+
+      - name: Build and validate analytical data
+        run: |
+          python python/01_prepare_data.py
+          python python/02_eda_rfm.py
+          python python/03_validate_outputs.py
+
+      - name: Publish full Power BI input tables
+        run: |
+          cp data/processed/jewelry_clean.csv data/jewelry_clean.csv
+          cp outputs/generated/customer_rfm.csv data/customer_rfm.csv
+
+      - name: Verify portfolio QA totals
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          sales = pd.read_csv('data/jewelry_clean.csv', low_memory=False)
+          rfm = pd.read_csv('data/customer_rfm.csv', low_memory=False)
+          assert len(sales) == 95911, len(sales)
+          assert sales['user_id'].nunique() == 33397
+          assert sales['order_id'].nunique() == 74760
+          assert round(sales['line_revenue'].sum(), 2) == 33179324.75
+          assert len(rfm) == 33397
+          assert rfm['user_id'].is_unique
+          assert round(rfm['monetary'].sum(), 2) == 33179324.75
+          print('QA passed: full Power BI data tables are valid.')
+          PY
+
+      - name: Commit full Power BI data tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/jewelry_clean.csv data/customer_rfm.csv
+          if git diff --cached --quiet; then
+            echo 'No data changes to commit.'
+          else
+            git commit -m 'data: replace samples with validated full Power BI tables'
+            git push
+          fi
