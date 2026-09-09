@@ -1,0 +1,76 @@
+{
+  "name": "Jewelry Retail Analytics",
+  "dataColors": [
+    "#B58A3B",
+    "#2F3136",
+    "#6F7C73",
+    "#A55353",
+    "#8A6B4A",
+    "#7B6F91",
+    "#4F718C",
+    "#A7A09A"
+  ],
+  "background": "#F7F5F2",
+  "foreground": "#222222",
+  "tableAccent": "#B58A3B",
+  "good": "#3E7C59",
+  "neutral": "#B58A3B",
+  "bad": "#A55353",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI",
+            "fontSize": 12,
+            "fontColor": { "solid": { "color": "#222222" } },
+            "background": { "solid": { "color": "#FFFFFF" } },
+            "alignment": "left"
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#E4DED5" } },
+            "radius": 8
+          }
+        ],
+        "visualHeader": [
+          {
+            "show": true,
+            "foreground": { "solid": { "color": "#6B6B6B" } },
+            "background": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 26,
+            "color": { "solid": { "color": "#222222" } }
+          }
+        ],
+        "categoryLabels": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI",
+            "fontSize": 10,
+            "color": { "solid": { "color": "#6B6B6B" } }
+          }
+        ]
+      }
+    }
+  }
+}
