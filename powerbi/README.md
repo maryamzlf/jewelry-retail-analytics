@@ -6,10 +6,11 @@ The Power BI portion of this project is complete and validated as a four-page po
 
 **Desktop artifact:** `Maryam_Jewelry_Portfolio_FINAL.pbix`  
 **Canvas:** 1280 × 720  
-**Pages:** 4  
-**Default opening page:** Executive Overview
+**Pages:** 4
 
 The PBIX binary is intentionally kept outside version control. This repository stores the validated input tables, reproducible analytical pipeline, implementation documentation, and lightweight visual previews of the final report.
+
+For presentation, begin with **Executive Overview**. The PBIX itself preserves the validated working Desktop state rather than being externally repackaged solely to force a saved opening page.
 
 ## Report previews
 
@@ -54,7 +55,7 @@ Content:
 - Average Selling Price by Category
 - Merchandising Readout
 
-The KPI tiles are full-snapshot portfolio benchmarks; slicers support exploratory chart analysis rather than redefining those baseline tiles.
+The four slicers are data-bound and support interactive exploration of the merchandising charts. Headline KPI tiles and compact Top-SKU/readout panels are intentionally validated **full-snapshot reference callouts**, so they remain stable portfolio benchmarks rather than changing with exploratory filters.
 
 ## Page 3 — Customer & Retention
 
@@ -73,7 +74,7 @@ Content:
 - Highest-Value Customers
 - Retention Priorities
 
-RFM is a **fixed full-history snapshot** calculated relative to the maximum transaction date. It is not presented as dynamically recalculated by a historical date slicer.
+RFM is a **fixed full-history snapshot** calculated relative to one day after the maximum observed transaction timestamp. It is not presented as dynamically recalculated by a historical date slicer.
 
 ## Page 4 — Data Quality & Audit
 
@@ -99,23 +100,20 @@ Validated Power BI-ready tables are committed under `data/`:
 
 The pipeline also produces reproducible working copies at `data/processed/jewelry_clean.csv` and `outputs/generated/customer_rfm.csv`.
 
-All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` are treated as **Text** in the semantic layer to avoid precision loss on 19-digit identifiers.
+## As-built semantic layer
 
-## Semantic model
+The validated final PBIX preserves the stable working import model used during development. Its report visuals bind to two imported tables:
 
-```text
-                    DimDate
-                       │
-                       │ 1 : *
-                       ▼
-                 Jewelry Sales
-                       ▲
-                       │ * : 1
-                       │
-                  Customer RFM
-```
+- **`jewelry_clean (2)`** — transaction-level purchase fact table
+- **`customer_rfm (2)`** — one-row-per-customer full-history RFM snapshot
 
-The customer relationship is single-direction from the customer snapshot into transactions. Reference documentation uses the business-friendly aliases `jewelry_sales` and `CustomerRFM` for readability while the final Desktop file preserves the working model lineage used during development.
+Transaction, merchandising, and data-quality charts aggregate directly from `jewelry_clean (2)`. RFM charts aggregate directly from `customer_rfm (2)`. The monthly trend uses the prepared `year_month` field in the clean transaction table, so the final working artifact does **not require a separate `DimDate` table**.
+
+The current report pages do not depend on cross-table calculations to render their business story; each analytical visual is bound to the appropriate validated import table. This keeps the portfolio artifact stable while the Python/SQL layer remains fully reproducible.
+
+The source CSVs preserve full identifiers. The final report abbreviates product/customer IDs only in compact presentation snapshots. For a future semantic-model rebuild, identifier columns should be assigned a categorical/Text data type rather than used as continuous numeric axes.
+
+See [`model_schema.md`](model_schema.md) for the exact as-built modeling notes. [`dax_measures.md`](dax_measures.md) is an optional reference library for extending the report with reusable measures and a date dimension; it is not a claim that every listed measure is embedded in the validated PBIX.
 
 ## Validation targets
 
@@ -146,7 +144,7 @@ The report uses a restrained retail-analytics visual system: deep charcoal heade
 ## Supporting documentation
 
 - [`dashboard_blueprint.md`](dashboard_blueprint.md) — as-built page specification
-- [`model_schema.md`](model_schema.md) — model design and RFM filter logic
-- [`dax_measures.md`](dax_measures.md) — reference DAX library
+- [`model_schema.md`](model_schema.md) — exact as-built import-model notes
+- [`dax_measures.md`](dax_measures.md) — optional DAX extension/reference library
 - [`JewelryRetailAnalyticsTheme.json`](JewelryRetailAnalyticsTheme.json) — reusable project palette
 - [`build_checklist.md`](build_checklist.md) — completed release QA record
