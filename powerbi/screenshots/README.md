@@ -1,12 +1,10 @@
-# Power BI Dashboard Screenshots
+# Power BI Dashboard Previews
 
-Final report screenshots correspond to the validated Desktop artifact `Maryam_Jewelry_Portfolio_FINAL7.pbix`.
+These lightweight SVG previews mirror the four pages of the validated Desktop artifact `Maryam_Jewelry_Portfolio_FINAL7.pbix` and keep the GitHub landing page fast to load.
 
-Expected portfolio images:
+- `01_executive_overview.svg` — Jewelry Retail Performance
+- `02_merchandising.svg` — Merchandising & Assortment
+- `03_customer_retention.svg` — Customer Value & Retention
+- `04_data_quality.svg` — Data Quality & Audit
 
-- `01_executive_overview.jpg`
-- `02_merchandising.jpg`
-- `03_customer_retention.jpg`
-- `04_data_quality.jpg`
-
-The report contains four 1280 × 720 pages: Executive Overview, Product & Merchandising, Customer & Retention, and Data Quality & Audit.
+The working Power BI report uses a **1280 × 720** canvas for each page. The PBIX remains the authoritative interactive artifact; these vector previews are repository-facing visual summaries.
