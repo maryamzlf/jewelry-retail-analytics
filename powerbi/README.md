@@ -1,112 +1,133 @@
-# Power BI Portfolio Build
+# Power BI Portfolio Report
 
-This folder contains the complete implementation package for the Power BI portion of the Jewelry Retail Analytics portfolio project.
+The Power BI portion of this project is complete and validated as a four-page portfolio report.
 
-The only artifact that must still be created manually in **Power BI Desktop** is the binary `.pbix` file itself. Everything needed to build it consistently is documented here.
+## Final report
 
-## Files
+**Desktop artifact:** `Maryam_Jewelry_Portfolio_FINAL7.pbix`  
+**Canvas:** 1280 × 720  
+**Pages:** 4
 
-| File | Purpose |
-|---|---|
-| [`dashboard_blueprint.md`](dashboard_blueprint.md) | Exact 4-page dashboard layout, visual types, field assignments, interactions, drill-through, sizing and portfolio design rules |
-| [`model_schema.md`](model_schema.md) | Table grain, relationships, cross-filter direction and RFM snapshot modeling logic |
-| [`dax_measures.md`](dax_measures.md) | Complete DAX measure library for KPIs, retention, RFM, merchandising, time intelligence and data quality |
-| [`JewelryRetailAnalyticsTheme.json`](JewelryRetailAnalyticsTheme.json) | Importable Power BI theme with professional gold/charcoal retail-analytics styling |
-| [`build_checklist.md`](build_checklist.md) | Step-by-step QA checklist from data import through final GitHub screenshots |
+The binary PBIX is intentionally kept outside version control. This repository stores the validated input tables, reproducible analytical pipeline, implementation documentation, and final report screenshots.
 
-## Required data inputs
+## Final screenshots
 
-Run the Python pipeline first:
+- [`screenshots/01_executive_overview.jpg`](screenshots/01_executive_overview.jpg)
+- [`screenshots/02_merchandising.jpg`](screenshots/02_merchandising.jpg)
+- [`screenshots/03_customer_retention.jpg`](screenshots/03_customer_retention.jpg)
+- [`screenshots/04_data_quality.jpg`](screenshots/04_data_quality.jpg)
 
-```bash
-python python/01_prepare_data.py
-python python/02_eda_rfm.py
-python python/03_validate_outputs.py
-```
+## Page 1 — Executive Overview
 
-Then import these into Power BI Desktop:
+**Header:** Jewelry Retail Performance
 
-1. `data/processed/jewelry_clean.csv` → `jewelry_sales`
-2. `outputs/generated/customer_rfm.csv` → `CustomerRFM`
-3. Optional: `outputs/data_quality_summary.csv` → `DataQualitySummary`
+Purpose: give a hiring manager or business leader the complete portfolio story quickly.
 
-All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` must be imported as **Text** to protect 19-digit precision.
+Content:
+- Gross Sales — **$33.18M**
+- Orders — **74,760**
+- Customers — **33,397**
+- Average Order Value — **$443.81**
+- Repeat Customer Rate — **26.9%**
+- Monthly Gross Sales trend
+- Revenue by Category
+- Revenue by RFM Segment
+- Executive readout with the principal merchandising and retention implications
 
-## Final report structure
+The time-series page explicitly treats December 2021 as a partial month.
 
-### Page 1 — Executive Overview
+## Page 2 — Product & Merchandising
 
-Focus:
-- Gross Sales
-- Orders
-- Customers
-- AOV
-- Repeat Customer Rate
-- Monthly sales trend
-- Category performance
-- Price-band mix
-- Metal/gem mix
+**Header:** Merchandising & Assortment
 
-### Page 2 — Product & Merchandising
+Purpose: demonstrate assortment, pricing, category, gemstone, and SKU-level analysis.
 
-Focus:
-- Top products
-- Category revenue vs selling price
-- Category × gemstone matrix
-- Product attribute completeness
-- Product drill-through
+Content:
+- Category, Metal, Gemstone, and Price Band slicers
+- Full-portfolio revenue benchmark
+- Average item price
+- Product count
+- Premium revenue share
+- Top SKU revenue leaders
+- Revenue by gemstone
+- Average selling price by category
+- Merchandising readout
 
-### Page 3 — Customer & Retention
+The KPI tiles on this page are full-snapshot portfolio benchmarks; slicers are used for exploratory chart analysis rather than redefining those baseline tiles.
 
-Focus:
-- Snapshot RFM segmentation
-- Customer share vs revenue share
-- Customer value vs recency
-- Top customers
-- At Risk reactivation opportunity
+## Page 3 — Customer & Retention
 
-`CustomerRFM` is a fixed snapshot built from each customer's full observed history. Do not imply that a normal date slicer dynamically recalculates the RFM segments.
+**Header:** Customer Value & Retention
 
-### Page 4 — Data Quality & Audit
+Purpose: translate full-history RFM segmentation into retention priorities.
 
-Focus:
-- 5,352 structurally repaired source rows
-- Missing category/gem/metal/gender/color rates
-- Category completeness trend
-- Exact duplicate-group audit
-- Explanation of why duplicates are flagged rather than automatically deleted
+Content:
+- RFM customers — **33,397**
+- Repeat customers — **8,976**
+- Average customer value — **$993.48**
+- At Risk revenue — **$5.06M**
+- Champions revenue — **$14.94M**
+- Revenue by RFM segment
+- Average customer lifetime value by segment
+- Highest-value customer snapshot
+- Retention priorities narrative
 
-## Model
+RFM is a **fixed full-history snapshot** calculated relative to the maximum transaction date. It is not presented as dynamically recalculated by a historical date slicer.
+
+## Page 4 — Data Quality & Audit
+
+**Header:** Data Quality & Audit
+
+Purpose: make analytical controls and source limitations visible rather than hiding them.
+
+Content:
+- Source rows — **95,911**
+- Structurally repaired rows — **5,352**
+- Missing category — **15.9%**
+- Missing gemstone — **35.5%**
+- Rows in duplicate groups — **5.1%**
+- Category revenue / taxonomy exposure
+- Duplicate-flag unit exposure
+- Attribute-completeness summary
+- Audit control notes
+
+## Data inputs
+
+Validated Power BI-ready tables are committed under `data/`:
+
+1. `data/jewelry_clean.csv` — 95,911 transaction lines
+2. `data/customer_rfm.csv` — 33,397 customer-level RFM records
+
+The source-level pipeline still writes reproducible working copies to:
+
+- `data/processed/jewelry_clean.csv`
+- `outputs/generated/customer_rfm.csv`
+
+All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` should be treated as **Text** in Power BI to avoid 19-digit precision loss.
+
+## Semantic model
+
+Conceptually, the report uses a compact transaction + customer-snapshot model:
 
 ```text
                     DimDate
                        │
                        │ 1 : *
                        ▼
-                 jewelry_sales
+                 Jewelry Sales
                        ▲
                        │ * : 1
                        │
-                  CustomerRFM
+                  Customer RFM
 ```
 
-Relationships are active and single-direction.
+The customer relationship is single-direction from the customer snapshot into transactions so segment selections can filter transaction analysis without implying that transaction filters recalculate historical RFM classifications.
 
-## Theme
+The final Desktop file preserves the working model lineage used during report development. The reference documentation uses business-friendly semantic aliases (`jewelry_sales`, `CustomerRFM`) for readability.
 
-In Power BI Desktop:
+## Validation targets
 
-`View → Themes → Browse for themes`
-
-Import:
-
-`JewelryRetailAnalyticsTheme.json`
-
-The design intentionally avoids decorative jewelry imagery and uses a restrained gold/charcoal palette so the work reads as **business intelligence and retail analytics**, not as a consumer marketing presentation.
-
-## Portfolio validation targets
-
-With report filters cleared, the final model should reconcile approximately to:
+With full-snapshot filters cleared, the analytical model reconciles to:
 
 | KPI | Value |
 |---|---:|
@@ -119,30 +140,37 @@ With report filters cleared, the final model should reconcile approximately to:
 | Repeat Customers | 8,976 |
 | Repeat Customer Rate | 26.88% |
 
-Key RFM check:
+RFM checks:
 
-- Champions: 2,362 customers / 45.03% of revenue
-- At Risk: 1,995 customers / 15.24% of revenue
+| Segment | Customers | Revenue Share |
+|---|---:|---:|
+| Champions | 2,362 | 45.03% |
+| At Risk | 1,995 | 15.24% |
+| Recent Customers | 10,997 | 12.89% |
+| Potential Loyalists | 7,399 | 10.92% |
+| Loyal Customers | 878 | 8.57% |
+| Hibernating | 9,766 | 7.35% |
 
-If these do not reconcile, check data types, relationships, active filters and ID precision before styling the report.
+## Design system
 
-## GitHub finishing step
+The report uses a restrained retail-analytics visual system:
 
-After the `.pbix` is built, add four high-resolution screenshots under:
+- Deep charcoal header
+- Warm off-white canvas
+- Gold commercial accent
+- Slate secondary series
+- Sage supporting category color
+- Muted red for risk / quality exceptions
+- Segoe UI typography
+- Rounded white analytical cards
+- No decorative jewelry photography, 3D visuals, gauges, or pie charts
 
-```text
-powerbi/screenshots/
-```
+The goal is to present the work as a decision-support product rather than a consumer-facing jewelry advertisement.
 
-Recommended names:
+## Supporting files
 
-```text
-01_executive_overview.png
-02_merchandising.png
-03_customer_retention.png
-04_data_quality.png
-```
-
-Then embed the Executive Overview screenshot near the top of the repository's main README.
-
-At that point the Power BI portion is fully demonstrated visually and the project can accurately be described on a resume as an **interactive Power BI dashboard**, not only a dashboard design/specification.
+- [`dashboard_blueprint.md`](dashboard_blueprint.md) — implemented page specification
+- [`model_schema.md`](model_schema.md) — model design and RFM filter logic
+- [`dax_measures.md`](dax_measures.md) — reference DAX library
+- [`JewelryRetailAnalyticsTheme.json`](JewelryRetailAnalyticsTheme.json) — reusable project palette
+- [`build_checklist.md`](build_checklist.md) — completed final QA record
