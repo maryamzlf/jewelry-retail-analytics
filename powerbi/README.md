@@ -8,14 +8,14 @@ The Power BI portion of this project is complete and validated as a four-page po
 **Canvas:** 1280 × 720  
 **Pages:** 4
 
-The binary PBIX is intentionally kept outside version control. This repository stores the validated input tables, reproducible analytical pipeline, implementation documentation, and final report screenshots.
+The PBIX binary is intentionally kept outside version control. This repository stores the validated input tables, reproducible analytical pipeline, implementation documentation, and lightweight visual previews of the final report.
 
-## Final screenshots
+## Final report previews
 
-- [`screenshots/01_executive_overview.jpg`](screenshots/01_executive_overview.jpg)
-- [`screenshots/02_merchandising.jpg`](screenshots/02_merchandising.jpg)
-- [`screenshots/03_customer_retention.jpg`](screenshots/03_customer_retention.jpg)
-- [`screenshots/04_data_quality.jpg`](screenshots/04_data_quality.jpg)
+- [`screenshots/01_executive_overview.svg`](screenshots/01_executive_overview.svg)
+- [`screenshots/02_merchandising.svg`](screenshots/02_merchandising.svg)
+- [`screenshots/03_customer_retention.svg`](screenshots/03_customer_retention.svg)
+- [`screenshots/04_data_quality.svg`](screenshots/04_data_quality.svg)
 
 ## Page 1 — Executive Overview
 
@@ -34,7 +34,7 @@ Content:
 - Revenue by RFM Segment
 - Executive readout with the principal merchandising and retention implications
 
-The time-series page explicitly treats December 2021 as a partial month.
+December 2021 is explicitly treated as a partial month.
 
 ## Page 2 — Product & Merchandising
 
@@ -44,7 +44,7 @@ Purpose: demonstrate assortment, pricing, category, gemstone, and SKU-level anal
 
 Content:
 - Category, Metal, Gemstone, and Price Band slicers
-- Full-portfolio revenue benchmark
+- Portfolio revenue benchmark
 - Average item price
 - Product count
 - Premium revenue share
@@ -98,10 +98,7 @@ Validated Power BI-ready tables are committed under `data/`:
 1. `data/jewelry_clean.csv` — 95,911 transaction lines
 2. `data/customer_rfm.csv` — 33,397 customer-level RFM records
 
-The source-level pipeline still writes reproducible working copies to:
-
-- `data/processed/jewelry_clean.csv`
-- `outputs/generated/customer_rfm.csv`
+The pipeline also produces reproducible working copies at `data/processed/jewelry_clean.csv` and `outputs/generated/customer_rfm.csv`.
 
 All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` should be treated as **Text** in Power BI to avoid 19-digit precision loss.
 
@@ -123,11 +120,9 @@ Conceptually, the report uses a compact transaction + customer-snapshot model:
 
 The customer relationship is single-direction from the customer snapshot into transactions so segment selections can filter transaction analysis without implying that transaction filters recalculate historical RFM classifications.
 
-The final Desktop file preserves the working model lineage used during report development. The reference documentation uses business-friendly semantic aliases (`jewelry_sales`, `CustomerRFM`) for readability.
+The final Desktop file preserves the working model lineage used during report development. Reference documentation uses the business-friendly aliases `jewelry_sales` and `CustomerRFM` for readability.
 
 ## Validation targets
-
-With full-snapshot filters cleared, the analytical model reconciles to:
 
 | KPI | Value |
 |---|---:|
@@ -153,19 +148,7 @@ RFM checks:
 
 ## Design system
 
-The report uses a restrained retail-analytics visual system:
-
-- Deep charcoal header
-- Warm off-white canvas
-- Gold commercial accent
-- Slate secondary series
-- Sage supporting category color
-- Muted red for risk / quality exceptions
-- Segoe UI typography
-- Rounded white analytical cards
-- No decorative jewelry photography, 3D visuals, gauges, or pie charts
-
-The goal is to present the work as a decision-support product rather than a consumer-facing jewelry advertisement.
+The final report uses a restrained retail-analytics visual system: deep charcoal header, warm off-white canvas, gold commercial accent, slate/sage supporting series, muted red for risk and data-quality exceptions, Segoe UI typography, and rounded analytical cards. Decorative jewelry photography, 3D visuals, gauges, and pie charts are intentionally avoided.
 
 ## Supporting files
 
