@@ -4,13 +4,14 @@ The Power BI portion of this project is complete and validated as a four-page po
 
 ## Final report
 
-**Desktop artifact:** `Maryam_Jewelry_Portfolio_FINAL7.pbix`  
+**Desktop artifact:** `Maryam_Jewelry_Portfolio_FINAL.pbix`  
 **Canvas:** 1280 × 720  
-**Pages:** 4
+**Pages:** 4  
+**Default opening page:** Executive Overview
 
 The PBIX binary is intentionally kept outside version control. This repository stores the validated input tables, reproducible analytical pipeline, implementation documentation, and lightweight visual previews of the final report.
 
-## Final report previews
+## Report previews
 
 - [`screenshots/01_executive_overview.svg`](screenshots/01_executive_overview.svg)
 - [`screenshots/02_merchandising.svg`](screenshots/02_merchandising.svg)
@@ -29,10 +30,10 @@ Content:
 - Customers — **33,397**
 - Average Order Value — **$443.81**
 - Repeat Customer Rate — **26.9%**
-- Monthly Gross Sales trend
+- Monthly Gross Sales
 - Revenue by Category
 - Revenue by RFM Segment
-- Executive readout with the principal merchandising and retention implications
+- Executive readout with merchandising and retention implications
 
 December 2021 is explicitly treated as a partial month.
 
@@ -44,16 +45,16 @@ Purpose: demonstrate assortment, pricing, category, gemstone, and SKU-level anal
 
 Content:
 - Category, Metal, Gemstone, and Price Band slicers
-- Portfolio revenue benchmark
-- Average item price
-- Product count
-- Premium revenue share
-- Top SKU revenue leaders
-- Revenue by gemstone
-- Average selling price by category
-- Merchandising readout
+- Portfolio Revenue — **$33.18M**
+- Average Item Price — **$345.94**
+- Products — **9,613**
+- Premium Revenue Share — **80.4%**
+- Top SKU Revenue Leaders
+- Revenue by Gemstone
+- Average Selling Price by Category
+- Merchandising Readout
 
-The KPI tiles on this page are full-snapshot portfolio benchmarks; slicers are used for exploratory chart analysis rather than redefining those baseline tiles.
+The KPI tiles are full-snapshot portfolio benchmarks; slicers support exploratory chart analysis rather than redefining those baseline tiles.
 
 ## Page 3 — Customer & Retention
 
@@ -62,34 +63,32 @@ The KPI tiles on this page are full-snapshot portfolio benchmarks; slicers are u
 Purpose: translate full-history RFM segmentation into retention priorities.
 
 Content:
-- RFM customers — **33,397**
-- Repeat customers — **8,976**
-- Average customer value — **$993.48**
-- At Risk revenue — **$5.06M**
-- Champions revenue — **$14.94M**
-- Revenue by RFM segment
-- Average customer lifetime value by segment
-- Highest-value customer snapshot
-- Retention priorities narrative
+- RFM Customers — **33,397**
+- Repeat Customers — **8,976**
+- Average Customer Value — **$993.48**
+- At Risk Revenue — **$5.06M**
+- Champions Revenue — **$14.94M**
+- Revenue by RFM Segment
+- Average Customer Lifetime Value by Segment
+- Highest-Value Customers
+- Retention Priorities
 
 RFM is a **fixed full-history snapshot** calculated relative to the maximum transaction date. It is not presented as dynamically recalculated by a historical date slicer.
 
 ## Page 4 — Data Quality & Audit
 
-**Header:** Data Quality & Audit
-
 Purpose: make analytical controls and source limitations visible rather than hiding them.
 
 Content:
-- Source rows — **95,911**
-- Structurally repaired rows — **5,352**
-- Missing category — **15.9%**
-- Missing gemstone — **35.5%**
-- Rows in duplicate groups — **5.1%**
-- Category revenue / taxonomy exposure
-- Duplicate-flag unit exposure
-- Attribute-completeness summary
-- Audit control notes
+- Source Rows — **95,911**
+- Structurally Repaired Rows — **5,352**
+- Missing Category — **15.9%**
+- Missing Gemstone — **35.5%**
+- Rows in Duplicate Groups — **5.1%**
+- Revenue by Category — Taxonomy Exposure
+- Duplicate Flag — Units Represented
+- Attribute Completeness
+- Audit Control Notes
 
 ## Data inputs
 
@@ -100,11 +99,9 @@ Validated Power BI-ready tables are committed under `data/`:
 
 The pipeline also produces reproducible working copies at `data/processed/jewelry_clean.csv` and `outputs/generated/customer_rfm.csv`.
 
-All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` should be treated as **Text** in Power BI to avoid 19-digit precision loss.
+All large identifiers such as `order_id`, `product_id`, `user_id`, and `category_id` are treated as **Text** in the semantic layer to avoid precision loss on 19-digit identifiers.
 
 ## Semantic model
-
-Conceptually, the report uses a compact transaction + customer-snapshot model:
 
 ```text
                     DimDate
@@ -118,9 +115,7 @@ Conceptually, the report uses a compact transaction + customer-snapshot model:
                   Customer RFM
 ```
 
-The customer relationship is single-direction from the customer snapshot into transactions so segment selections can filter transaction analysis without implying that transaction filters recalculate historical RFM classifications.
-
-The final Desktop file preserves the working model lineage used during report development. Reference documentation uses the business-friendly aliases `jewelry_sales` and `CustomerRFM` for readability.
+The customer relationship is single-direction from the customer snapshot into transactions. Reference documentation uses the business-friendly aliases `jewelry_sales` and `CustomerRFM` for readability while the final Desktop file preserves the working model lineage used during development.
 
 ## Validation targets
 
@@ -135,9 +130,7 @@ The final Desktop file preserves the working model lineage used during report de
 | Repeat Customers | 8,976 |
 | Repeat Customer Rate | 26.88% |
 
-RFM checks:
-
-| Segment | Customers | Revenue Share |
+| RFM Segment | Customers | Revenue Share |
 |---|---:|---:|
 | Champions | 2,362 | 45.03% |
 | At Risk | 1,995 | 15.24% |
@@ -148,12 +141,12 @@ RFM checks:
 
 ## Design system
 
-The final report uses a restrained retail-analytics visual system: deep charcoal header, warm off-white canvas, gold commercial accent, slate/sage supporting series, muted red for risk and data-quality exceptions, Segoe UI typography, and rounded analytical cards. Decorative jewelry photography, 3D visuals, gauges, and pie charts are intentionally avoided.
+The report uses a restrained retail-analytics visual system: deep charcoal header, warm off-white canvas, muted gold commercial accent, slate/sage supporting series, muted red for risk and data-quality exceptions, Segoe UI typography, and rounded analytical cards. Decorative jewelry photography, 3D visuals, gauges, and pie charts are intentionally avoided.
 
-## Supporting files
+## Supporting documentation
 
-- [`dashboard_blueprint.md`](dashboard_blueprint.md) — implemented page specification
+- [`dashboard_blueprint.md`](dashboard_blueprint.md) — as-built page specification
 - [`model_schema.md`](model_schema.md) — model design and RFM filter logic
 - [`dax_measures.md`](dax_measures.md) — reference DAX library
 - [`JewelryRetailAnalyticsTheme.json`](JewelryRetailAnalyticsTheme.json) — reusable project palette
-- [`build_checklist.md`](build_checklist.md) — completed final QA record
+- [`build_checklist.md`](build_checklist.md) — completed release QA record
