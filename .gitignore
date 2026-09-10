@@ -1,8 +1,16 @@
-# Full/raw data and regenerated detailed outputs
+# Full/raw data and regenerated working outputs
 /data/raw/*.csv
 /data/processed/*.csv
 /data/processed/*.parquet
 /outputs/generated/
+
+# Final Power BI binary is distributed outside version control
+*.pbix
+*.pbix.autosave
+
+# Power BI project local/cache state
+**/.pbi/
+**/localSettings.json
 
 # Python
 __pycache__/
@@ -11,9 +19,6 @@ __pycache__/
 venv/
 .env
 .ipynb_checkpoints/
-
-# Power BI temporary/local files
-*.pbix.autosave
 
 # OS / editors
 .DS_Store
