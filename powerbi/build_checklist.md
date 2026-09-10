@@ -1,170 +1,132 @@
-# Power BI Build Checklist
+# Power BI Final QA Record
 
-Use this checklist to turn the documented model into the final `.pbix` portfolio artifact.
+This checklist records the completed validation status of the Jewelry Retail Analytics portfolio report.
 
-## A. Data preparation
+## Data pipeline
 
-- [ ] Run `python/01_prepare_data.py`
-- [ ] Run `python/02_eda_rfm.py`
-- [ ] Run `python/03_validate_outputs.py`
-- [ ] Confirm `data/processed/jewelry_clean.csv` exists
-- [ ] Confirm `outputs/generated/customer_rfm.csv` exists
-- [ ] Confirm all reconciliation checks return PASS
+- [x] Raw CSV ingestion logic implemented
+- [x] 11-field structural repair implemented before parsing
+- [x] Required-field and numeric validation implemented
+- [x] Exact duplicate groups flagged non-destructively
+- [x] Full cleaned fact table generated
+- [x] Full customer RFM table generated
+- [x] Curated analytical outputs generated
+- [x] Cross-output revenue reconciliation implemented
+- [x] GitHub Actions full-data sync completed successfully
 
-## B. Import into Power BI Desktop
+## Portfolio data validation
 
-Import:
+- [x] Transaction lines = **95,911**
+- [x] Orders = **74,760**
+- [x] Customers = **33,397**
+- [x] Products = **9,613**
+- [x] Gross Sales = **$33,179,324.75**
+- [x] Average Order Value = **$443.81**
+- [x] Repeat Customers = **8,976**
+- [x] Repeat Customer Rate = **26.88%**
+- [x] Customer RFM revenue reconciles to fact-table gross sales
 
-1. `data/processed/jewelry_clean.csv` → rename table to `jewelry_sales`
-2. `outputs/generated/customer_rfm.csv` → rename table to `CustomerRFM`
-3. Optional: `outputs/data_quality_summary.csv` → rename table to `DataQualitySummary`
+## RFM validation
 
-Set IDs such as `order_id`, `product_id`, `user_id`, and `category_id` to **Text**, not Whole Number, to prevent loss of precision on 19-digit identifiers.
+- [x] Champions = **2,362 customers / 45.03% of revenue**
+- [x] At Risk = **1,995 customers / 15.24% of revenue**
+- [x] Recent Customers = **10,997 customers / 12.89% of revenue**
+- [x] Potential Loyalists = **7,399 customers / 10.92% of revenue**
+- [x] Loyal Customers = **878 customers / 8.57% of revenue**
+- [x] Hibernating = **9,766 customers / 7.35% of revenue**
+- [x] RFM documented as a fixed full-history snapshot
 
-## C. Data types
+## Final Power BI report
 
-### jewelry_sales
+Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL7.pbix`
 
-- `event_time` → Date/Time/Timezone if available; otherwise Date/Time
-- `order_date` → Date
-- `quantity` → Whole Number
-- `price` → Fixed Decimal Number
-- `line_revenue` → Fixed Decimal Number
-- `order_id` → Text
-- `product_id` → Text
-- `user_id` → Text
-- `category_id` → Text
-- `brand_code` → Whole Number
-- `is_exact_duplicate` → True/False
+- [x] 4 report pages
+- [x] 1280 × 720 report canvas
+- [x] Executive Overview
+- [x] Product & Merchandising
+- [x] Customer & Retention
+- [x] Data Quality & Audit
+- [x] Consistent charcoal / gold / warm-white design system
+- [x] Business-oriented titles and narrative callouts
+- [x] No pie/donut charts
+- [x] No 3D charts
+- [x] No decorative jewelry photography
+- [x] Partial-period context included for December 2021
+- [x] Data-quality limitations presented explicitly
+- [x] Product and customer identifiers abbreviated only in presentation snapshots, not in source data
 
-### CustomerRFM
+## Page-level review
 
-- `user_id` → Text
-- `first_purchase` → Date/Time
-- `last_purchase` → Date/Time
-- `frequency` → Whole Number
-- `monetary` → Fixed Decimal Number
-- `customer_aov` → Fixed Decimal Number
-- `recency_days` → Whole Number
-- `r_score`, `f_score`, `m_score`, `fm_score` → Whole Number
-- `segment` → Text
+### Executive Overview
 
-## D. Date table
+- [x] Gross Sales displayed
+- [x] Orders displayed
+- [x] Customers displayed
+- [x] Average Order Value displayed
+- [x] Repeat Customer Rate displayed
+- [x] Monthly sales trend displayed
+- [x] Category revenue ranking displayed
+- [x] RFM revenue concentration displayed
+- [x] Executive business readout included
 
-- [ ] Create `DimDate` using the DAX in `dax_measures.md`
-- [ ] Add `Year Month Sort = YEAR([Date]) * 100 + MONTH([Date])`
-- [ ] Sort `DimDate[Year Month]` by `DimDate[Year Month Sort]`
-- [ ] Mark `DimDate` as the Date Table
-- [ ] Relate `DimDate[Date]` 1 → * `jewelry_sales[order_date]`
+### Product & Merchandising
 
-## E. Customer relationship
+- [x] Category slicer included
+- [x] Metal slicer included
+- [x] Gemstone slicer included
+- [x] Price Band slicer included
+- [x] Portfolio benchmark KPIs included
+- [x] Top SKU revenue leaders included
+- [x] Revenue by gemstone included
+- [x] Average selling price by category included
+- [x] Merchandising readout included
 
-- [ ] Relate `CustomerRFM[user_id]` 1 → * `jewelry_sales[user_id]`
-- [ ] Cross-filter direction = Single
-- [ ] Confirm `CustomerRFM[user_id]` is unique
+### Customer & Retention
 
-## F. Theme
+- [x] RFM customer count included
+- [x] Repeat customer count included
+- [x] Average customer value included
+- [x] At Risk revenue included
+- [x] Champions revenue included
+- [x] Revenue by segment included
+- [x] Average customer lifetime value by segment included
+- [x] Highest-value customer snapshot included
+- [x] Retention-priority narrative included
 
-In Power BI Desktop:
+### Data Quality & Audit
 
-`View → Themes → Browse for themes`
+- [x] Source row count included
+- [x] Structurally repaired row count included
+- [x] Missing category rate included
+- [x] Missing gemstone rate included
+- [x] Duplicate-group rate included
+- [x] Taxonomy exposure visual included
+- [x] Duplicate exposure visual included
+- [x] Attribute completeness summary included
+- [x] Audit-control narrative included
 
-Import:
+## GitHub portfolio packaging
 
-`powerbi/JewelryRetailAnalyticsTheme.json`
+- [x] Main README updated to final project status
+- [x] Full validated Power BI input tables committed
+- [x] Analytical findings documented
+- [x] Methodology documented
+- [x] Data dictionary documented
+- [x] SQL analytical layer documented
+- [x] Power BI implementation documentation aligned with final report
+- [x] Final dashboard screenshot paths standardized
+- [x] README embeds Executive Overview near the top
 
-Then set page canvas background to `#F7F5F2` if the theme does not apply it automatically to the page.
+## Optional future extensions
 
-## G. Measures
+These are not required for the current portfolio release:
 
-Create every measure in `powerbi/dax_measures.md`.
+- Publish to Power BI Service and add a public/demo link if appropriate
+- Add report-page tooltips
+- Add accessibility alt text if the report is published for broader consumption
+- Add inventory, cost, returns, or promotion data if a richer source becomes available
+- Add cohort retention or CLV forecasting with a dataset that supports those analyses reliably
 
-Recommended display folders:
+## Resume-ready project statement
 
-- `01 Executive KPIs`
-- `02 Customer & Retention`
-- `03 Merchandising`
-- `04 Time Intelligence`
-- `05 Data Quality`
-
-## H. Build pages
-
-Follow `dashboard_blueprint.md` exactly.
-
-- [ ] Page 1 — Executive Overview
-- [ ] Page 2 — Product & Merchandising
-- [ ] Page 3 — Customer & Retention
-- [ ] Page 4 — Data Quality & Audit
-- [ ] Product Detail drill-through page
-
-## I. Verify portfolio numbers
-
-With all report filters cleared, cards should reconcile approximately to:
-
-| KPI | Expected value |
-|---|---:|
-| Gross Sales | $33,179,324.75 |
-| Orders | 74,760 |
-| Customers | 33,397 |
-| Products | 9,613 |
-| Average Order Value | $443.81 |
-| Repeat Customers | 8,976 |
-| Repeat Customer Rate | 26.88% |
-
-RFM cross-check:
-
-| Segment | Customers | Revenue Share |
-|---|---:|---:|
-| Champions | 2,362 | 45.03% |
-| At Risk | 1,995 | 15.24% |
-| Recent Customers | 10,997 | 12.89% |
-| Potential Loyalists | 7,399 | 10.92% |
-| Loyal Customers | 878 | 8.57% |
-| Hibernating | 9,766 | 7.35% |
-
-If these values do not reconcile, stop and check relationships, data types, filters, and whether IDs were imported as numbers rather than text.
-
-## J. Interaction QA
-
-- [ ] Date slicer filters Pages 1–3 correctly
-- [ ] Category selection cross-filters related visuals
-- [ ] RFM segment filters Customer page visuals
-- [ ] Share measures retain intended denominators
-- [ ] Drill-through works from product visuals
-- [ ] Tooltips show correct metrics
-- [ ] No visual displays `(Blank)` when `Unknown` is the intended label
-
-## K. Presentation QA
-
-- [ ] Currency measures use consistent formatting
-- [ ] Percentage measures use one decimal place unless needed
-- [ ] 2018 is labeled as a partial period
-- [ ] December 2021 is labeled as partial
-- [ ] Visual titles state business meaning
-- [ ] No pie/donut charts
-- [ ] No 3D charts
-- [ ] No excessive data labels
-- [ ] All visuals align to a consistent grid
-- [ ] Each page has sufficient white space
-- [ ] Alt text added to major visuals
-
-## L. GitHub screenshots
-
-Create folder locally:
-
-`powerbi/screenshots/`
-
-Capture at high resolution:
-
-- `01_executive_overview.png`
-- `02_merchandising.png`
-- `03_customer_retention.png`
-- `04_data_quality.png`
-
-After screenshots are committed, embed `01_executive_overview.png` near the top of the main README.
-
-## M. Resume wording after `.pbix` is actually built
-
-Once the dashboard exists, it is accurate to write:
-
-> Built an end-to-end jewelry retail analytics solution using Python, SQL Server, and Power BI, analyzing 95K+ transaction lines, 74K+ orders, 33K+ customers, and $33M+ in sales; developed interactive executive, merchandising, retention, and data-quality dashboards with RFM segmentation and DAX-based KPI reporting.
+> Built an end-to-end jewelry retail analytics solution using Python, SQL Server, and Power BI, analyzing 95K+ transaction lines, 74K+ orders, 33K+ customers, and $33M+ in sales; developed executive, merchandising, retention, RFM, and data-quality reporting with structural data repair and cross-output reconciliation.
