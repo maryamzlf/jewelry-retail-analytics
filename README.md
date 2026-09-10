@@ -17,7 +17,7 @@ End-to-end **SQL + Python + Power BI** portfolio project transforming messy jewe
 | Repeat customers | **8,976** |
 | Repeat customer rate | **26.88%** |
 
-The completed Power BI report contains four pages: **Executive Overview**, **Product & Merchandising**, **Customer & Retention**, and **Data Quality & Audit**. The validated Desktop artifact is `Maryam_Jewelry_Portfolio_FINAL.pbix` and opens on Executive Overview by default. The PBIX binary is kept outside version control; this repository contains the reproducible pipeline, validated Power BI input tables, SQL analytical layer, documentation, and lightweight dashboard previews.
+The completed Power BI report contains four pages: **Executive Overview**, **Product & Merchandising**, **Customer & Retention**, and **Data Quality & Audit**. The validated Desktop artifact is `Maryam_Jewelry_Portfolio_FINAL.pbix`. The PBIX binary is kept outside version control; this repository contains the reproducible pipeline, validated Power BI input tables, SQL analytical layer, documentation, and lightweight dashboard previews.
 
 ## Key Business Findings
 
@@ -82,7 +82,7 @@ Exact duplicate groups are **flagged rather than blindly deleted** because ident
 
 **SQL Server / T-SQL** — analytical schema design, indexes, data-quality audits, CTEs, window functions, customer-value analysis, RFM scoring aligned with the Python logic, merchandising queries, and Power BI-ready views.
 
-**Power BI** — four-page executive report, KPI modeling, merchandising analysis, full-history RFM storytelling, data-quality reporting, interactive exploration, and portfolio-grade visual hierarchy.
+**Power BI** — four-page executive report, validated KPI reporting, interactive merchandising analysis, full-history RFM storytelling, data-quality reporting, direct visual aggregations, and portfolio-grade visual hierarchy.
 
 ## Repository Structure
 
@@ -169,4 +169,4 @@ The raw Kaggle source is not committed. The repository **does include the valida
 - Revenue is not profit because cost and margin data are unavailable.
 - Inventory, returns, promotions, traffic, and conversion data are not present.
 - Missing product attributes constrain some assortment conclusions and are presented as a business finding rather than hidden through imputation.
-- RFM segments are a **fixed full-history snapshot** relative to the end of the observed dataset; they are not dynamically recalculated historical segments.
+- RFM segments are a **fixed full-history snapshot** relative to one day after the maximum observed transaction timestamp; they are not dynamically recalculated historical segments.
