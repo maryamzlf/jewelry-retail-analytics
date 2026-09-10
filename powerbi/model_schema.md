@@ -1,39 +1,27 @@
-# Power BI Semantic Model
+# Power BI Semantic Model — As Built
 
-This document describes the **reference semantic model** used for the final Jewelry Retail Analytics report.
+This document describes the **actual stable import model used by the validated final Desktop artifact** `Maryam_Jewelry_Portfolio_FINAL.pbix`.
 
-The final Desktop artifact preserves the working import lineage created during development. For documentation readability, the tables are referred to by business-friendly aliases:
+## Final model shape
 
-- `jewelry_sales` — transaction fact table
-- `CustomerRFM` — full-history customer snapshot
-- `DimDate` — calendar dimension
+The working PBIX preserves two imported tables:
 
-## Model shape
+- `jewelry_clean (2)` — transaction-level purchase fact table
+- `customer_rfm (2)` — one-row-per-customer full-history RFM snapshot
 
-```text
-                    DimDate
-                       │
-                       │ 1 : *
-                       ▼
-                 jewelry_sales
-                       ▲
-                       │ * : 1
-                       │
-                  CustomerRFM
-```
+The final report deliberately keeps the model simple and stable. Transaction, merchandising, and data-quality visuals aggregate directly from `jewelry_clean (2)`. Customer/RFM visuals aggregate directly from `customer_rfm (2)`.
 
-Relationships are active and single-direction.
+The report does not require a separate date dimension to render the implemented pages. Monthly Gross Sales uses the prepared `year_month` field from the transaction table and sorts it ascending.
 
-## `jewelry_sales`
+## `jewelry_clean (2)`
 
 **Grain:** one purchased product line.
 
 Validated source: `data/jewelry_clean.csv`
 
-Primary analytical fields:
+Fields used by the final report include:
 
-- `event_time`
-- `order_date`
+- `year_month`
 - `order_id`
 - `product_id`
 - `user_id`
@@ -50,35 +38,17 @@ Primary analytical fields:
 - `price_band`
 - `is_exact_duplicate`
 
-All 19-digit identifiers must be treated as **Text** in Power BI to avoid precision loss.
+The underlying CSV preserves complete identifier values. Compact product/customer snapshots abbreviate long IDs only in the presentation text; the source data are not truncated.
 
-## `DimDate`
+For a future rebuild, identifier fields should be treated as categorical/Text fields in Power BI so they are not interpreted as continuous numeric axes.
 
-A standard date dimension can be created from the minimum and maximum `order_date`.
-
-Relationship:
-
-`DimDate[Date]` **1 → *** `jewelry_sales[order_date]`
-
-Recommended attributes:
-
-- Date
-- Year
-- Quarter
-- Month
-- Month Number
-- Year Month
-- Year Month Sort
-
-`DimDate[Year Month]` should be sorted by `DimDate[Year Month Sort]`.
-
-## `CustomerRFM`
+## `customer_rfm (2)`
 
 **Grain:** one row per customer.
 
 Validated source: `data/customer_rfm.csv`
 
-Fields:
+Fields include:
 
 - `user_id`
 - `first_purchase`
@@ -95,35 +65,30 @@ Fields:
 - `fm_score`
 - `segment`
 
-Relationship:
-
-`CustomerRFM[user_id]` **1 → *** `jewelry_sales[user_id]`
-
-Cross-filter direction: **Single, from CustomerRFM to the transaction fact table.**
-
-## Why RFM is modeled as a snapshot
-
-The RFM table is calculated from each customer's complete observed purchase history relative to the dataset end date. It is therefore a **snapshot classification**, not a historical segment that is recomputed for every report date.
+RFM is calculated from each customer's complete observed history relative to **one day after the maximum observed transaction timestamp**. It is therefore a snapshot classification, not a historical segment that is recomputed for every report date.
 
 Implications:
 
-- Segment selections may filter transaction analysis.
-- Historical transaction filters should not be presented as recalculating RFM membership.
-- Customer reporting should be labeled and interpreted as a full-history snapshot.
+- RFM visuals are interpreted as full-history customer segmentation.
+- The final RFM page does not imply dynamic historical re-segmentation.
+- Revenue by RFM Segment on the Executive page is sourced directly from the RFM snapshot table.
 
-## Data-quality modeling
+## Data-quality reporting
 
-`outputs/data_quality_summary.csv` can be used as a disconnected source for fixed audit callouts such as the 5,352 structurally repaired rows.
+The final page combines:
 
-No relationship is required because those metrics describe the complete input snapshot.
+- data-bound transaction visuals for category exposure and duplicate-flag units; and
+- validated full-snapshot audit callouts from the Python pipeline, including the **5,352** structurally repaired rows and attribute-missingness rates.
 
-## Why there is no asserted authoritative product dimension
+This keeps source limitations visible without pretending the dataset has a governed product master.
 
-A dedicated `DimProduct` would be appropriate in a production environment with a governed product master. In this source, category, gemstone, metal, and other attributes contain material missingness. Keeping those attributes at fact level avoids implying a cleaner product master than the source supports.
+## Why there is no asserted product dimension
 
-## Model validation targets
+A dedicated product dimension would be appropriate in a production environment with a governed product master. In this source, category, gemstone, metal, gender, color, and brand attributes contain material missingness. Keeping the implemented report close to the validated transaction source avoids implying cleaner master data than the source supports.
 
-With full-snapshot filters cleared:
+## Validation targets
+
+With the full snapshot represented:
 
 | Check | Expected result |
 |---|---:|
@@ -137,8 +102,12 @@ With full-snapshot filters cleared:
 
 Additional controls:
 
-1. `CustomerRFM[user_id]` is unique.
-2. `DimDate[Date]` is unique.
-3. IDs are represented as Text in Power BI.
-4. No many-to-many relationship is required.
-5. Customer and fact-table revenue reconcile to the same portfolio total.
+1. `customer_rfm (2)[user_id]` is unique at customer grain.
+2. Transaction revenue reconciles to customer RFM monetary value.
+3. The monthly axis is the prepared `year_month` field sorted ascending.
+4. Long identifiers are preserved in source data and abbreviated only in compact presentation snapshots.
+5. No cross-table dynamic calculation is required for the current four-page report to render correctly.
+
+## Optional extension model
+
+The repository's [`dax_measures.md`](dax_measures.md) contains reusable DAX patterns and an optional `DimDate` design for future extension. Those patterns are **reference material**, not a description of extra tables that must exist in the validated final PBIX.
