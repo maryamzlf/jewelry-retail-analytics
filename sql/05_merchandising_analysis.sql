@@ -58,12 +58,12 @@ ORDER BY CASE price_band
 END;
 
 -- 5. Top products by revenue
+-- Python uses the modal category/metal/gem value for each product. The OUTER
+-- APPLY blocks below mirror that rule and use alphabetical order as a stable
+-- tie-break, matching pandas mode().iat[0] behavior.
 WITH product_perf AS (
     SELECT
         product_id,
-        MAX(category_name) AS category_name,
-        MAX(metal) AS metal,
-        MAX(gem) AS gem,
         SUM(quantity) AS units,
         COUNT(DISTINCT order_id) AS orders,
         SUM(line_revenue) AS revenue,
@@ -72,10 +72,41 @@ WITH product_perf AS (
     GROUP BY product_id
 )
 SELECT TOP (100)
-    *,
-    DENSE_RANK() OVER (ORDER BY revenue DESC) AS revenue_rank
-FROM product_perf
-ORDER BY revenue DESC;
+    p.product_id,
+    cat.category_name,
+    met.metal,
+    gem_attr.gem,
+    p.units,
+    p.orders,
+    p.revenue,
+    p.avg_item_price,
+    DENSE_RANK() OVER (ORDER BY p.revenue DESC) AS revenue_rank
+FROM product_perf p
+OUTER APPLY (
+    SELECT TOP (1)
+        COALESCE(s.category_name, 'Unknown') AS category_name
+    FROM dbo.jewelry_sales s
+    WHERE s.product_id = p.product_id
+    GROUP BY COALESCE(s.category_name, 'Unknown')
+    ORDER BY COUNT(*) DESC, COALESCE(s.category_name, 'Unknown') ASC
+) cat
+OUTER APPLY (
+    SELECT TOP (1)
+        COALESCE(s.metal, 'Unknown') AS metal
+    FROM dbo.jewelry_sales s
+    WHERE s.product_id = p.product_id
+    GROUP BY COALESCE(s.metal, 'Unknown')
+    ORDER BY COUNT(*) DESC, COALESCE(s.metal, 'Unknown') ASC
+) met
+OUTER APPLY (
+    SELECT TOP (1)
+        COALESCE(s.gem, 'Unknown') AS gem
+    FROM dbo.jewelry_sales s
+    WHERE s.product_id = p.product_id
+    GROUP BY COALESCE(s.gem, 'Unknown')
+    ORDER BY COUNT(*) DESC, COALESCE(s.gem, 'Unknown') ASC
+) gem_attr
+ORDER BY p.revenue DESC;
 
 -- 6. Category x gemstone matrix
 SELECT
