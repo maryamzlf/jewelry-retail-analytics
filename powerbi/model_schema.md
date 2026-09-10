@@ -1,8 +1,14 @@
-# Power BI Model Schema
+# Power BI Semantic Model
 
-## Recommended semantic model
+This document describes the **reference semantic model** used for the final Jewelry Retail Analytics report.
 
-Use a compact star-style model with two analytical areas: transaction analysis and snapshot customer segmentation.
+The final Desktop artifact preserves the working import lineage created during development. For documentation readability, the tables are referred to by business-friendly aliases:
+
+- `jewelry_sales` — transaction fact table
+- `CustomerRFM` — full-history customer snapshot
+- `DimDate` — calendar dimension
+
+## Model shape
 
 ```text
                     DimDate
@@ -16,9 +22,13 @@ Use a compact star-style model with two analytical areas: transaction analysis a
                   CustomerRFM
 ```
 
-## Table 1 — `jewelry_sales`
+Relationships are active and single-direction.
+
+## `jewelry_sales`
 
 **Grain:** one purchased product line.
+
+Validated source: `data/jewelry_clean.csv`
 
 Primary analytical fields:
 
@@ -32,29 +42,25 @@ Primary analytical fields:
 - `line_revenue`
 - `category_name`
 - `category_code`
+- `brand_code`
 - `metal`
 - `gem`
+- `gender`
 - `color`
 - `price_band`
 - `is_exact_duplicate`
 
-Treat all 19-digit identifiers as **Text** in Power BI.
+All 19-digit identifiers must be treated as **Text** in Power BI to avoid precision loss.
 
-## Table 2 — `DimDate`
+## `DimDate`
 
-Created with DAX from the minimum and maximum `order_date`.
+A standard date dimension can be created from the minimum and maximum `order_date`.
 
 Relationship:
 
 `DimDate[Date]` **1 → *** `jewelry_sales[order_date]`
 
-Settings:
-
-- Active relationship: Yes
-- Cross-filter direction: Single
-- Mark as Date Table: Yes
-
-Recommended fields:
+Recommended attributes:
 
 - Date
 - Year
@@ -64,13 +70,13 @@ Recommended fields:
 - Year Month
 - Year Month Sort
 
-## Table 3 — `CustomerRFM`
+`DimDate[Year Month]` should be sorted by `DimDate[Year Month Sort]`.
 
-Source:
-
-`outputs/generated/customer_rfm.csv`
+## `CustomerRFM`
 
 **Grain:** one row per customer.
+
+Validated source: `data/customer_rfm.csv`
 
 Fields:
 
@@ -93,40 +99,46 @@ Relationship:
 
 `CustomerRFM[user_id]` **1 → *** `jewelry_sales[user_id]`
 
-Settings:
+Cross-filter direction: **Single, from CustomerRFM to the transaction fact table.**
 
-- Active relationship: Yes
-- Cross-filter direction: Single, from CustomerRFM to jewelry_sales
+## Why RFM is modeled as a snapshot
 
-## Why the RFM relationship is single-direction
+The RFM table is calculated from each customer's complete observed purchase history relative to the dataset end date. It is therefore a **snapshot classification**, not a historical segment that is recomputed for every report date.
 
-`CustomerRFM` is a snapshot calculated using the customer's full history through the final dataset date. It should filter transactions when a segment is selected, but normal transaction filters should not silently change the precomputed RFM classification.
+Implications:
 
-For that reason:
+- Segment selections may filter transaction analysis.
+- Historical transaction filters should not be presented as recalculating RFM membership.
+- Customer reporting should be labeled and interpreted as a full-history snapshot.
 
-- An RFM segment slicer **may filter** jewelry transaction visuals.
-- A date/category/product slicer on the fact table should **not be presented as recalculating RFM**.
-- Keep Page 3 labeled `Snapshot RFM Segmentation`.
+## Data-quality modeling
 
-## Optional `DataQualitySummary`
+`outputs/data_quality_summary.csv` can be used as a disconnected source for fixed audit callouts such as the 5,352 structurally repaired rows.
 
-You may import `outputs/data_quality_summary.csv` as a disconnected table for fixed source-quality callouts such as the 5,352 structurally repaired rows.
+No relationship is required because those metrics describe the complete input snapshot.
 
-Do not create a relationship between `DataQualitySummary` and the fact table; its metrics describe the full source snapshot.
+## Why there is no asserted authoritative product dimension
 
-## Optional product dimension
+A dedicated `DimProduct` would be appropriate in a production environment with a governed product master. In this source, category, gemstone, metal, and other attributes contain material missingness. Keeping those attributes at fact level avoids implying a cleaner product master than the source supports.
 
-For a larger production model, a dedicated `DimProduct` would be appropriate. For this portfolio snapshot, product attributes are incomplete and can vary in missingness, so using the fact table directly avoids implying a cleaner authoritative product master than the source actually provides.
+## Model validation targets
 
-## Model QA
+With full-snapshot filters cleared:
 
-Before building visuals confirm:
+| Check | Expected result |
+|---|---:|
+| Transaction lines | 95,911 |
+| Orders | 74,760 |
+| Customers | 33,397 |
+| Products | 9,613 |
+| Gross Sales | $33,179,324.75 |
+| RFM Customers | 33,397 |
+| RFM Revenue | $33,179,324.75 |
+
+Additional controls:
 
 1. `CustomerRFM[user_id]` is unique.
 2. `DimDate[Date]` is unique.
-3. `jewelry_sales[order_id]`, `product_id`, `user_id`, and `category_id` are Text.
-4. All relationships are active and single-direction.
-5. No many-to-many relationship exists.
-6. Gross Sales with no filters = **$33,179,324.75**.
-7. Customers with no filters = **33,397**.
-8. `RFM Customers` with no filters = **33,397**.
+3. IDs are represented as Text in Power BI.
+4. No many-to-many relationship is required.
+5. Customer and fact-table revenue reconcile to the same portfolio total.
