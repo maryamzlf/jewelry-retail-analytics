@@ -37,27 +37,33 @@ This checklist records the completed validation status of the Jewelry Retail Ana
 - [x] Loyal Customers = **878 customers / 8.57% of revenue**
 - [x] Hibernating = **9,766 customers / 7.35% of revenue**
 - [x] RFM documented as a fixed full-history snapshot
+- [x] RFM analysis date = one day after the maximum observed transaction timestamp
 - [x] SQL RFM scoring aligned with Python tie-to-even `np.rint()` behavior
 
 ## Final Power BI report
 
 Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL.pbix`
 
+- [x] Final PBIX opens and renders correctly in Power BI Desktop
 - [x] PBIX archive integrity check passed
 - [x] Embedded DataModel preserved from the validated working file
 - [x] 4 report pages
-- [x] 1280 × 720 report canvas
-- [x] Opens on **Executive Overview** by default
+- [x] 1280 × 720 report canvas on all pages
+- [x] Executive Overview is Page 1 and the designated presentation starting page
 - [x] Executive Overview
 - [x] Product & Merchandising
 - [x] Customer & Retention
 - [x] Data Quality & Audit
+- [x] 59 report visuals structurally validated
+- [x] All report JSON definitions parse successfully
+- [x] No out-of-bounds report visuals detected
 - [x] Consistent charcoal / gold / warm-white design system
 - [x] Business-oriented titles and narrative callouts
 - [x] No pie/donut charts, 3D charts, gauges, or decorative jewelry photography
 - [x] Partial-period context included for December 2021
 - [x] Data-quality limitations presented explicitly
-- [x] Product and customer identifiers abbreviated only in presentation snapshots, not in source data
+- [x] Product and customer identifiers abbreviated only in compact presentation snapshots, not in source data
+- [x] Data-bound charts reference only the validated transaction and RFM import tables
 
 ## Page-level review
 
@@ -72,11 +78,12 @@ Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL.pbix`
 ### Product & Merchandising
 
 - [x] Category, Metal, Gemstone, and Price Band slicers
-- [x] Portfolio benchmark KPIs
+- [x] Full-snapshot portfolio benchmark KPIs
 - [x] Top SKU revenue leaders
 - [x] Revenue by gemstone
 - [x] Average selling price by category
 - [x] Merchandising readout
+- [x] Slicers support interactive exploration of data-bound merchandising charts
 
 ### Customer & Retention
 
@@ -103,7 +110,9 @@ Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL.pbix`
 - [x] Full validated Power BI input tables committed
 - [x] Analytical findings, methodology, and data dictionary documented
 - [x] SQL analytical layer documented and aligned with Python logic
-- [x] Power BI implementation documentation aligned with final report
+- [x] Power BI implementation documentation aligned with the actual final report
+- [x] As-built semantic-model documentation reflects the stable two-table import model
+- [x] DAX file clearly labeled as an optional extension/reference library
 - [x] Lightweight dashboard previews committed under `powerbi/screenshots/`
 - [x] README embeds Executive Overview near the top
 - [x] PBIX and Power BI cache/local state excluded from Git
@@ -117,6 +126,7 @@ These are enhancements, not release blockers:
 - Add report-page tooltips and accessibility alt text for a published version
 - Add inventory, cost, returns, promotions, traffic, or conversion data if a richer source becomes available
 - Add cohort retention or CLV forecasting with a source that reliably supports those analyses
+- Replace lightweight vector previews with pixel-exact exported report images if desired
 
 ## Resume-ready project statement
 
