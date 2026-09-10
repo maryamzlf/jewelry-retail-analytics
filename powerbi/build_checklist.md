@@ -1,6 +1,6 @@
 # Power BI Final QA Record
 
-This checklist records the completed validation status of the Jewelry Retail Analytics portfolio report.
+This checklist records the completed validation status of the Jewelry Retail Analytics portfolio release.
 
 ## Data pipeline
 
@@ -25,6 +25,8 @@ This checklist records the completed validation status of the Jewelry Retail Ana
 - [x] Repeat Customers = **8,976**
 - [x] Repeat Customer Rate = **26.88%**
 - [x] Customer RFM revenue reconciles to fact-table gross sales
+- [x] `line_revenue = quantity × price` for all transaction rows
+- [x] No nonpositive quantities, negative prices, or missing required IDs
 
 ## RFM validation
 
@@ -35,22 +37,24 @@ This checklist records the completed validation status of the Jewelry Retail Ana
 - [x] Loyal Customers = **878 customers / 8.57% of revenue**
 - [x] Hibernating = **9,766 customers / 7.35% of revenue**
 - [x] RFM documented as a fixed full-history snapshot
+- [x] SQL RFM scoring aligned with Python tie-to-even `np.rint()` behavior
 
 ## Final Power BI report
 
-Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL7.pbix`
+Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL.pbix`
 
+- [x] PBIX archive integrity check passed
+- [x] Embedded DataModel preserved from the validated working file
 - [x] 4 report pages
 - [x] 1280 × 720 report canvas
+- [x] Opens on **Executive Overview** by default
 - [x] Executive Overview
 - [x] Product & Merchandising
 - [x] Customer & Retention
 - [x] Data Quality & Audit
 - [x] Consistent charcoal / gold / warm-white design system
 - [x] Business-oriented titles and narrative callouts
-- [x] No pie/donut charts
-- [x] No 3D charts
-- [x] No decorative jewelry photography
+- [x] No pie/donut charts, 3D charts, gauges, or decorative jewelry photography
 - [x] Partial-period context included for December 2021
 - [x] Data-quality limitations presented explicitly
 - [x] Product and customer identifiers abbreviated only in presentation snapshots, not in source data
@@ -59,73 +63,60 @@ Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL7.pbix`
 
 ### Executive Overview
 
-- [x] Gross Sales displayed
-- [x] Orders displayed
-- [x] Customers displayed
-- [x] Average Order Value displayed
-- [x] Repeat Customer Rate displayed
-- [x] Monthly sales trend displayed
-- [x] Category revenue ranking displayed
-- [x] RFM revenue concentration displayed
-- [x] Executive business readout included
+- [x] Gross Sales, Orders, Customers, Average Order Value, Repeat Customer Rate
+- [x] Monthly Gross Sales trend
+- [x] Category revenue ranking
+- [x] RFM revenue concentration
+- [x] Executive business readout
 
 ### Product & Merchandising
 
-- [x] Category slicer included
-- [x] Metal slicer included
-- [x] Gemstone slicer included
-- [x] Price Band slicer included
-- [x] Portfolio benchmark KPIs included
-- [x] Top SKU revenue leaders included
-- [x] Revenue by gemstone included
-- [x] Average selling price by category included
-- [x] Merchandising readout included
+- [x] Category, Metal, Gemstone, and Price Band slicers
+- [x] Portfolio benchmark KPIs
+- [x] Top SKU revenue leaders
+- [x] Revenue by gemstone
+- [x] Average selling price by category
+- [x] Merchandising readout
 
 ### Customer & Retention
 
-- [x] RFM customer count included
-- [x] Repeat customer count included
-- [x] Average customer value included
-- [x] At Risk revenue included
-- [x] Champions revenue included
-- [x] Revenue by segment included
-- [x] Average customer lifetime value by segment included
-- [x] Highest-value customer snapshot included
-- [x] Retention-priority narrative included
+- [x] RFM Customers, Repeat Customers, Average Customer Value
+- [x] At Risk and Champions revenue
+- [x] Revenue by segment
+- [x] Average customer lifetime value by segment
+- [x] Highest-value customer snapshot
+- [x] Retention-priority narrative
 
 ### Data Quality & Audit
 
-- [x] Source row count included
-- [x] Structurally repaired row count included
-- [x] Missing category rate included
-- [x] Missing gemstone rate included
-- [x] Duplicate-group rate included
-- [x] Taxonomy exposure visual included
-- [x] Duplicate exposure visual included
-- [x] Attribute completeness summary included
-- [x] Audit-control narrative included
+- [x] Source row and structural-repair counts
+- [x] Missing category and gemstone rates
+- [x] Duplicate-group rate
+- [x] Taxonomy exposure visual
+- [x] Duplicate exposure visual
+- [x] Attribute completeness summary
+- [x] Audit-control narrative
 
 ## GitHub portfolio packaging
 
-- [x] Main README updated to final project status
+- [x] Main README reflects final project status
 - [x] Full validated Power BI input tables committed
-- [x] Analytical findings documented
-- [x] Methodology documented
-- [x] Data dictionary documented
-- [x] SQL analytical layer documented
+- [x] Analytical findings, methodology, and data dictionary documented
+- [x] SQL analytical layer documented and aligned with Python logic
 - [x] Power BI implementation documentation aligned with final report
-- [x] Final dashboard screenshot paths standardized
+- [x] Lightweight dashboard previews committed under `powerbi/screenshots/`
 - [x] README embeds Executive Overview near the top
+- [x] PBIX and Power BI cache/local state excluded from Git
+- [x] No unfinished TODO/checklist items remain in the release documentation
 
 ## Optional future extensions
 
-These are not required for the current portfolio release:
+These are enhancements, not release blockers:
 
-- Publish to Power BI Service and add a public/demo link if appropriate
-- Add report-page tooltips
-- Add accessibility alt text if the report is published for broader consumption
-- Add inventory, cost, returns, or promotion data if a richer source becomes available
-- Add cohort retention or CLV forecasting with a dataset that supports those analyses reliably
+- Publish to Power BI Service and add a demo link if appropriate
+- Add report-page tooltips and accessibility alt text for a published version
+- Add inventory, cost, returns, promotions, traffic, or conversion data if a richer source becomes available
+- Add cohort retention or CLV forecasting with a source that reliably supports those analyses
 
 ## Resume-ready project statement
 
