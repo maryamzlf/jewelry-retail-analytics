@@ -1,4 +1,6 @@
 -- Customer value, repeat behavior, and RFM analysis
+-- The RFM logic mirrors python/02_eda_rfm.py so SQL and Python produce
+-- the same scoring and business-segment interpretation.
 
 -- 1. Customer lifetime value
 WITH customer_value AS (
@@ -51,6 +53,8 @@ GROUP BY items
 ORDER BY items;
 
 -- 4. RFM scoring with SQL window functions
+-- Recency and monetary use quintiles. Frequency uses transparent business
+-- rules because most customers have exactly one order.
 WITH anchor AS (
     SELECT DATEADD(day, 1, CAST(MAX(event_time) AS datetime2)) AS analysis_date
     FROM dbo.jewelry_sales
@@ -82,7 +86,17 @@ scored AS (
 segmented AS (
     SELECT
         *,
-        CAST(ROUND((f_score + m_score) / 2.0, 0) AS int) AS fm_score
+        -- Match NumPy np.rint() used by the Python pipeline: .5 ties round
+        -- to the nearest even integer rather than SQL Server's ROUND behavior.
+        CAST(
+            CASE
+                WHEN (f_score + m_score) % 2 = 0
+                    THEN (f_score + m_score) / 2
+                WHEN ((f_score + m_score) / 2) % 2 = 0
+                    THEN (f_score + m_score) / 2
+                ELSE (f_score + m_score) / 2 + 1
+            END AS int
+        ) AS fm_score
     FROM scored
 )
 SELECT
