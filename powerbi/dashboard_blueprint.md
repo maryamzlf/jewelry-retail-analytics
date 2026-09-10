@@ -1,370 +1,205 @@
-# Power BI Dashboard Blueprint
+# Implemented Power BI Dashboard Specification
 
-This document is the exact build specification for the portfolio dashboard.
+This document describes the **final implemented four-page report**, not a future build plan.
 
-## Canvas and visual system
+## Visual system
 
-- Page size: **16:9 — 1280 x 720**
-- Background: `#F7F5F2`
-- Primary text: `#222222`
-- Secondary text: `#6B6B6B`
-- Accent gold: `#B58A3B`
-- Deep charcoal: `#2F3136`
-- White cards: `#FFFFFF`
-- Border: `#E4DED5`
-- Positive indicator: `#3E7C59`
-- Warning / risk: `#A55353`
-- Font: Segoe UI
-- Page title: 24 pt semibold
-- KPI value: 24–28 pt semibold
-- Visual title: 12–14 pt semibold
-- Body / labels: 10–11 pt
-- Card corner radius: 8–10 px
-- Card shadow: subtle only
+- Canvas: **1280 × 720**
+- Background: warm off-white
+- Header: deep charcoal
+- Commercial accent: muted gold
+- Secondary series: slate / sage
+- Risk and data-quality exceptions: muted red
+- Typography: Segoe UI
+- Cards: white, rounded, light borders
+- Design rule: no jewelry photography, gradients, 3D charts, gauges, or pie charts
 
-Do not use jewelry photography, gradients, 3D charts, gauges, pie charts, or decorative icons that compete with the data. The dashboard should look like a professional retail analytics product rather than a jewelry advertisement.
+The visual direction is intentionally closer to an executive retail analytics product than a consumer-facing jewelry presentation.
 
 ---
 
 # Page 1 — Executive Overview
 
-**Purpose:** Give a hiring manager or business leader the complete story in less than 30 seconds.
+**Visible header:** `Jewelry Retail Performance`
 
-## Header
+**Purpose:** communicate the entire commercial story in under 30 seconds.
 
-**Position:** x=32, y=24, w=1168, h=48  
-**Text:** `Jewelry Retail Performance Overview`  
-**Subtitle:** `Sales, customers, product mix and retention | Dec 2018–Dec 2021 snapshot`
+## Snapshot KPIs
 
-## KPI row
+- Gross Sales — **$33.18M**
+- Orders — **74,760**
+- Customers — **33,397**
+- Average Order Value — **$443.81**
+- Repeat Customer Rate — **26.9%**
 
-Five cards, each approximately 216 x 94, y=88.
+## Visuals
 
-| Card | Measure | Position |
-|---|---|---|
-| Gross Sales | `[Gross Sales]` | x=32 |
-| Orders | `[Orders]` | x=264 |
-| Customers | `[Customers]` | x=496 |
-| Average Order Value | `[Average Order Value]` | x=728 |
-| Repeat Customer Rate | `[Repeat Customer Rate]` | x=960 |
+### Monthly Gross Sales
 
-Formatting:
-- Gross Sales: `$0.00,,M`
-- Orders / Customers: `0.0,K`
-- AOV: `$0.00`
-- Repeat Customer Rate: `0.0%`
+Line chart showing revenue momentum across the observed period.
 
-## Visual 1 — Monthly Gross Sales Trend
+Interpretation rule: December 2021 is a partial month and should not be compared with complete months.
 
-**Type:** Line chart  
-**Position:** x=32, y=208, w=744, h=270
+### Revenue by Category
 
-- X-axis: `DimDate[Year Month]`
-- Y-axis: `[Gross Sales]`
-- Tooltip: `[Orders]`, `[Customers]`, `[Average Order Value]`, `[MoM Sales %]`
-- Sort by: `DimDate[Year Month Sort]`
-- Add a vertical annotation/note that December 2021 is partial.
+Horizontal ranking of category revenue. Earrings and rings dominate the known category mix; `Unknown` remains visible to preserve taxonomy-quality context.
 
-Title: `Monthly Gross Sales`
+### Revenue by RFM Segment
 
-## Visual 2 — Revenue by Category
+Horizontal ranking of historical customer revenue by full-history RFM segment.
 
-**Type:** Horizontal bar chart  
-**Position:** x=800, y=208, w=400, h=270
+### Executive Readout
 
-- Y-axis: `jewelry_sales[category_name]`
-- X-axis: `[Gross Sales]`
-- Tooltip: `[Orders]`, `[Average Item Price]`, `[Category Revenue Share]`
-- Sort descending by Gross Sales
-- Data labels: on
-
-Title: `Revenue by Category`
-
-## Visual 3 — Revenue by Price Band
-
-**Type:** Column chart  
-**Position:** x=32, y=502, w=550, h=178
-
-- X-axis: `jewelry_sales[price_band]`
-- Y-axis: `[Gross Sales]`
-- Sort using a numeric `Price Band Sort` column: 1–5
-- Tooltip: `[Orders]`, `[Units]`, `[Average Item Price]`
-
-Title: `Revenue by Price Band`
-
-## Visual 4 — Product Mix
-
-**Type:** 100% stacked bar chart  
-**Position:** x=606, y=502, w=594, h=178
-
-- Y-axis: `jewelry_sales[metal]`
-- Legend: `jewelry_sales[gem]`
-- X-axis: `[Gross Sales]`
-- Visual-level filter: Top 8 gems by Gross Sales
-
-Title: `Revenue Mix by Metal & Gemstone`
-
-## Slicers
-
-Use compact dropdown slicers aligned in the upper-right/header area or in a collapsible filter pane:
-- Date
-- Category
-- Metal
-- Gem
-- Price Band
-
-**Sync these slicers across Pages 1 and 2.** Page 3 uses fixed snapshot RFM segmentation, so transaction slicers must not be presented as dynamically recalculating RFM.
+Business narrative highlighting:
+- Earrings + Rings = **65.9% of revenue**
+- $250+ items = **80.4% of revenue**
+- growth is primarily volume-led rather than driven by a rising basket value
+- retention and premium-category depth are the principal opportunities
 
 ---
 
 # Page 2 — Product & Merchandising
 
-**Purpose:** Demonstrate retail, assortment, pricing and product-performance analysis.
+**Visible header:** `Merchandising & Assortment`
 
-## KPI row
+**Purpose:** demonstrate retail assortment, pricing, gemstone, and SKU-level analysis.
 
-Four cards:
-- `[Products]`
-- `[Average Item Price]`
-- `[Units]`
-- `[Items per Order]`
+## Exploration slicers
 
-## Visual 1 — Top Products by Revenue
-
-**Type:** Horizontal bar chart  
-**Position:** x=32, y=190, w=600, h=310
-
-- Y-axis: `jewelry_sales[product_id]`
-- X-axis: `[Gross Sales]`
-- Filter: Top N = 15 by `[Gross Sales]`
-- Tooltip: category, metal, gem, `[Orders]`, `[Units]`, `[Average Item Price]`
-
-Title: `Top 15 Products by Revenue`
-
-## Visual 2 — Category Revenue vs Average Selling Price
-
-**Type:** Scatter chart  
-**Position:** x=656, y=190, w=544, h=310
-
-- X-axis: `[Average Item Price]`
-- Y-axis: `[Gross Sales]`
-- Details: `jewelry_sales[category_name]`
-- Size: `[Units]`
-- Tooltip: `[Orders]`, `[Customers]`, `[Category Revenue Share]`
-
-Title: `Category Value Map`
-
-This visual should make earrings and rings visibly dominant while showing price-positioning differences.
-
-## Visual 3 — Gemstone x Category Matrix
-
-**Type:** Matrix  
-**Position:** x=32, y=524, w=750, h=164
-
-- Rows: `jewelry_sales[category_name]`
-- Columns: `jewelry_sales[gem]`
-- Values: `[Gross Sales]`
-- Conditional formatting: background color scale
-- Limit columns to the highest-revenue gems plus Unknown.
-
-Title: `Category × Gemstone Revenue Matrix`
-
-## Visual 4 — Taxonomy Completeness
-
-**Type:** KPI / stacked bar  
-**Position:** x=806, y=524, w=394, h=164
-
-Show:
-- `[Missing Category Rate]`
-- `[Missing Gem Rate]`
-- `[Missing Metal Rate]`
-
-Title: `Product Attribute Completeness`
-
-## Drill-through page behavior
-
-Create a drill-through target called **Product Detail** using `product_id`.
-
-Show:
-- Product ID
 - Category
 - Metal
-- Gem
-- Revenue
-- Orders
-- Units
-- Average Item Price
-- Monthly sales trend
+- Gemstone
+- Price Band
+
+These slicers support exploratory chart analysis. The KPI tiles on this page are intentionally **full-portfolio benchmark values** rather than restated filter-context KPIs.
+
+## Snapshot KPIs
+
+- Portfolio Revenue — **$33.18M**
+- Average Item Price — **$345.94**
+- Products — **9,613**
+- Premium Revenue Share — **80.4%**
+
+## Visuals
+
+### Top SKU Revenue Leaders
+
+Compact ranked snapshot of the highest-revenue products. Product IDs are abbreviated in the presentation layer for readability while the underlying model retains the full identifier.
+
+### Revenue by Gemstone
+
+Horizontal bar chart highlighting gemstone revenue concentration.
+
+### Average Selling Price by Category
+
+Column chart comparing category price positioning.
+
+### Merchandising Readout
+
+Narrative interpretation covering premium pricing, category concentration, gold dominance, and the limitation created by uncategorized product revenue.
 
 ---
 
 # Page 3 — Customer & Retention
 
-**Page subtitle:** `Snapshot RFM Segmentation`
+**Visible header:** `Customer Value & Retention`
 
-**Purpose:** Make customer concentration, repeat behavior and RFM opportunity obvious.
+**Purpose:** translate full-history customer value and RFM segmentation into retention priorities.
 
-Load the full generated customer table:
+## Snapshot KPIs
 
-`outputs/generated/customer_rfm.csv`
+- RFM Customers — **33,397**
+- Repeat Customers — **8,976**
+- Average Customer Value — **$993.48**
+- At Risk Revenue — **$5.06M**
+- Champions Revenue — **$14.94M**
 
-Rename it to `CustomerRFM` and relate:
+## Visuals
 
-`CustomerRFM[user_id]` **1 → *** `jewelry_sales[user_id]`
+### Revenue by RFM Segment
 
-Cross-filter direction: single, from CustomerRFM to jewelry_sales.
+Historical revenue concentration by segment.
 
-The RFM classification is calculated from the customer's full purchase history relative to the final dataset date. **Do not sync the Date slicer to this page and do not imply that category/product selections dynamically recalculate RFM.** An RFM segment slicer may filter transaction visuals because the relationship flows from CustomerRFM to the fact table.
+### Average Customer Lifetime Value by Segment
 
-## KPI row
+Segment-level comparison of average historical customer value.
 
-Five cards:
-- `[RFM Customers]`
-- `[Repeat Customers]`
-- `[Repeat Customer Rate]`
-- `[Average Customer Value]`
-- `[At Risk Revenue]`
+### Highest-Value Customers
 
-## Visual 1 — Customer Share vs Revenue Share by RFM Segment
+Compact top-five customer snapshot. Customer IDs are abbreviated only for visual readability.
 
-**Type:** Clustered bar chart  
-**Position:** x=32, y=202, w=640, h=284
+### Retention Priorities
 
-- Y-axis: `CustomerRFM[segment]`
-- Values: `[RFM Customer Share]`, `[RFM Revenue Share]`
-- Sort by RFM Revenue Share descending
+Narrative highlighting:
+- Champions = **7.1% of customers / 45.0% of revenue**
+- At Risk = **6.0% of customers / 15.2% of revenue**
+- protect Champions, reactivate At Risk customers, and create a structured second-purchase journey for Recent Customers
 
-Title: `RFM Segments: Customer Share vs Revenue Share`
+## RFM interpretation rule
 
-The key portfolio story should be immediately visible: Champions are a small share of customers but contribute a disproportionate share of revenue.
-
-## Visual 2 — Customer Value vs Recency
-
-**Type:** Scatter chart  
-**Position:** x=696, y=202, w=504, h=284
-
-- X-axis: `CustomerRFM[recency_days]`
-- Y-axis: `CustomerRFM[monetary]`
-- Size: `CustomerRFM[frequency]`
-- Legend: `CustomerRFM[segment]`
-- Use logarithmic Y-axis only if readability materially improves.
-
-Title: `Customer Value & Recency`
-
-## Visual 3 — Top Customers
-
-**Type:** Table  
-**Position:** x=32, y=510, w=720, h=178
-
-Columns:
-- user_id
-- segment
-- monetary
-- frequency
-- recency_days
-- customer_aov
-
-Sort by monetary descending. Show top 15.
-
-Title: `Highest-Value Customers`
-
-## Visual 4 — Retention Opportunity
-
-**Type:** Two cards plus narrative  
-**Position:** x=776, y=510, w=424, h=178
-
-Cards:
-- At Risk customer count
-- At Risk revenue
-
-Narrative text:
-`At Risk customers represent a relatively small customer group but a material share of historical revenue, making reactivation a high-priority retention opportunity.`
+RFM is a **fixed full-history snapshot** relative to the end of the observed dataset. The page intentionally does not imply that historical date filtering recalculates customer segments.
 
 ---
 
 # Page 4 — Data Quality & Audit
 
-**Purpose:** Show analytical rigor and explain why the cleaning pipeline matters.
+**Visible header:** `Data Quality & Audit`
 
-Do **not** sync normal business slicers to this page unless useful.
+**Purpose:** demonstrate data-governance awareness and make source limitations visible alongside business results.
 
-## KPI cards
+## Snapshot KPIs
 
-- Source Rows: 95,911
-- Structurally Repaired Rows: 5,352
-- Missing Category Rate
-- Missing Gem Rate
-- Exact Duplicate Group Rows
+- Source Rows — **95,911**
+- Structurally Repaired — **5,352**
+- Missing Category — **15.9%**
+- Missing Gemstone — **35.5%**
+- Rows in Exact-Duplicate Groups — **5.1%**
 
-## Visual 1 — Missingness by Attribute
+## Visuals
 
-**Type:** Horizontal bar chart
+### Revenue by Category — Taxonomy Exposure
 
-Attributes:
-- Gender
-- Gem
-- Category Code
-- Brand Code
-- Color
-- Metal
+Shows that material revenue sits in uncategorized products, making taxonomy quality a business issue rather than a purely technical one.
 
-Measure: missing-rate percentage.
+### Duplicate Flag — Units Represented
 
-Title: `Missing Product & Customer Attributes`
+Compares rows inside and outside exact-duplicate groups while preserving the source records.
 
-## Visual 2 — Category Completeness Over Time
+### Attribute Completeness
 
-**Type:** Line chart
+Snapshot of major missingness rates:
+- Gender — **50.2%**
+- Gemstone — **35.5%**
+- Category code — **15.9%**
+- Brand code — **10.6%**
+- Color — **8.0%**
+- Metal — **5.7%**
 
-- X-axis: `DimDate[Year Month]`
-- Y-axis: `[Missing Category Rate]`
+### Audit Control Notes
 
-Title: `Missing Category Rate Over Time`
-
-## Visual 3 — Structural Repair Callout
-
-Use a large text/card callout:
-
-`5,352 source rows contained 11 fields instead of the expected 13. The Python ingestion pipeline reconstructs the two missing positions before parsing, preventing price and customer identifiers from shifting into incorrect columns.`
-
-## Visual 4 — Duplicate Audit
-
-Show:
-- Rows belonging to exact duplicate groups
-- Excess duplicate rows beyond first occurrence
-- Represented revenue associated with duplicate-group rows if calculated
-
-Add the note:
-`Duplicates are flagged rather than automatically removed because identical purchase lines may represent legitimate repeated units.`
+Explains the 11-field structural repair, the non-destructive duplicate policy, and cross-output revenue reconciliation.
 
 ---
 
-# Interaction rules
+# Interaction and interpretation rules
 
-1. Date, Category, Metal, Gem and Price Band slicers are synchronized across Pages 1 and 2.
-2. Selecting a category on Page 1 should cross-filter price-band and product-mix visuals.
-3. Page 3 uses snapshot RFM. Do not sync normal transaction slicers to the RFM visuals.
-4. RFM segment selection should filter the customer scatter and top-customer table and may filter transaction visuals through the single-direction CustomerRFM relationship.
-5. Disable interactions where a selection creates misleading denominator changes in share KPIs.
-6. Use report-page tooltips for category and customer segment details when possible.
+1. Merchandising slicers are intended for exploratory chart analysis.
+2. Snapshot benchmark tiles remain clearly positioned as full-portfolio reference values.
+3. RFM segmentation is not presented as dynamically recomputed by a historical date selection.
+4. `Unknown` product attributes remain visible when they are analytically material.
+5. Exact duplicate groups are flagged rather than automatically removed.
+6. 2018 and December 2021 are interpreted as partial periods.
+7. Revenue is never described as profit because cost and margin fields are unavailable.
 
-# Accessibility and portfolio polish
+# Portfolio screenshot set
 
-- Maintain at least 4.5:1 contrast for body text.
-- Never encode meaning with color alone.
-- Add alt text to each visual.
-- Keep visual titles business-oriented rather than technical.
-- Use `$33.18M`, not long unformatted dollar values, on cards.
-- Use one or two decimal places only where decision-useful.
-- Add a small footer: `Portfolio project | Source: REES46 jewelry purchase-history dataset`.
+The final report is represented in GitHub by:
 
-# Final screenshot set for GitHub
+```text
+powerbi/screenshots/01_executive_overview.jpg
+powerbi/screenshots/02_merchandising.jpg
+powerbi/screenshots/03_customer_retention.jpg
+powerbi/screenshots/04_data_quality.jpg
+```
 
-After the `.pbix` is built, export or capture these four pages at high resolution:
-
-1. `powerbi/screenshots/01_executive_overview.png`
-2. `powerbi/screenshots/02_merchandising.png`
-3. `powerbi/screenshots/03_customer_retention.png`
-4. `powerbi/screenshots/04_data_quality.png`
-
-The first screenshot should be embedded near the top of the repository README because it will have the highest recruiting value.
+The Executive Overview is embedded near the top of the repository README for immediate recruiting visibility.
