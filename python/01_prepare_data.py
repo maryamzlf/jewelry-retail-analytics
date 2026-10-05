@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW_FILE = ROOT / "data" / "raw" / "jewelry.csv"
 OUTPUT_FILE = ROOT / "data" / "processed" / "jewelry_clean.csv"
 QUALITY_FILE = ROOT / "outputs" / "data_quality_summary.csv"
+SAMPLE_FILE = ROOT / "data" / "sample_jewelry.csv"
 
 SOURCE_COLUMNS = [
     "event_time",
@@ -195,6 +196,7 @@ def main() -> None:
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     QUALITY_FILE.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_FILE, index=False)
+    df.head(20).to_csv(SAMPLE_FILE, index=False)
     build_quality_summary(df, row_width_counts).to_csv(QUALITY_FILE, index=False)
 
     print(f"Source row widths: {row_width_counts}")
@@ -204,6 +206,7 @@ def main() -> None:
     print(f"Products: {df['product_id'].nunique():,}")
     print(f"Revenue represented: ${df['line_revenue'].sum():,.2f}")
     print(f"Saved clean data: {OUTPUT_FILE}")
+    print(f"Saved schema sample: {SAMPLE_FILE}")
     print(f"Saved quality audit: {QUALITY_FILE}")
 
 
