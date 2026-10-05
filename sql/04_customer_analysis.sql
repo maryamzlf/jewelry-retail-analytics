@@ -52,9 +52,9 @@ FROM baskets
 GROUP BY items
 ORDER BY items;
 
--- 4. RFM scoring with SQL window functions
--- Recency and monetary use quintiles. Frequency uses transparent business
--- rules because most customers have exactly one order.
+-- 4. RFM scoring aligned exactly with python/02_eda_rfm.py
+-- Python uses elapsed whole days, pandas rank(method='first') followed by
+-- qcut(..., 5), rule-based frequency bins, and NumPy tie-to-even rounding.
 WITH anchor AS (
     SELECT DATEADD(day, 1, CAST(MAX(event_time) AS datetime2)) AS analysis_date
     FROM dbo.jewelry_sales
@@ -62,17 +62,40 @@ WITH anchor AS (
 customer_rfm AS (
     SELECT
         s.user_id,
-        DATEDIFF(day, MAX(CAST(s.event_time AS datetime2)), a.analysis_date) AS recency_days,
+        CAST(
+            FLOOR(
+                DATEDIFF_BIG(
+                    second,
+                    MAX(CAST(s.event_time AS datetime2)),
+                    a.analysis_date
+                ) / 86400.0
+            ) AS int
+        ) AS recency_days,
         COUNT(DISTINCT s.order_id) AS frequency,
         SUM(s.line_revenue) AS monetary
     FROM dbo.jewelry_sales s
     CROSS JOIN anchor a
     GROUP BY s.user_id, a.analysis_date
 ),
+ranked AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (ORDER BY recency_days ASC, user_id ASC) AS recency_rank,
+        ROW_NUMBER() OVER (ORDER BY monetary ASC, user_id ASC) AS monetary_rank,
+        COUNT(*) OVER () AS customer_count
+    FROM customer_rfm
+),
 scored AS (
     SELECT
         *,
-        6 - NTILE(5) OVER (ORDER BY recency_days ASC, user_id) AS r_score,
+        CASE
+            WHEN customer_count <= 1 THEN 5
+            WHEN 1.0 * (recency_rank - 1) / (customer_count - 1) <= 0.20 THEN 5
+            WHEN 1.0 * (recency_rank - 1) / (customer_count - 1) <= 0.40 THEN 4
+            WHEN 1.0 * (recency_rank - 1) / (customer_count - 1) <= 0.60 THEN 3
+            WHEN 1.0 * (recency_rank - 1) / (customer_count - 1) <= 0.80 THEN 2
+            ELSE 1
+        END AS r_score,
         CASE
             WHEN frequency = 1 THEN 1
             WHEN frequency = 2 THEN 2
@@ -80,14 +103,20 @@ scored AS (
             WHEN frequency BETWEEN 5 AND 9 THEN 4
             ELSE 5
         END AS f_score,
-        NTILE(5) OVER (ORDER BY monetary ASC, user_id) AS m_score
-    FROM customer_rfm
+        CASE
+            WHEN customer_count <= 1 THEN 5
+            WHEN 1.0 * (monetary_rank - 1) / (customer_count - 1) <= 0.20 THEN 1
+            WHEN 1.0 * (monetary_rank - 1) / (customer_count - 1) <= 0.40 THEN 2
+            WHEN 1.0 * (monetary_rank - 1) / (customer_count - 1) <= 0.60 THEN 3
+            WHEN 1.0 * (monetary_rank - 1) / (customer_count - 1) <= 0.80 THEN 4
+            ELSE 5
+        END AS m_score
+    FROM ranked
 ),
 segmented AS (
     SELECT
         *,
-        -- Match NumPy np.rint() used by the Python pipeline: .5 ties round
-        -- to the nearest even integer rather than SQL Server's ROUND behavior.
+        -- Match NumPy np.rint(): .5 ties round to the nearest even integer.
         CAST(
             CASE
                 WHEN (f_score + m_score) % 2 = 0
