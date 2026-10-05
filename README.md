@@ -40,7 +40,7 @@ See [`docs/findings.md`](docs/findings.md) for the business interpretation and [
 | **Customer Value & Retention** | **Data Quality & Audit** |
 | ![Customer & Retention](powerbi/screenshots/03_customer_retention.svg) | ![Data Quality & Audit](powerbi/screenshots/04_data_quality.svg) |
 
-These SVGs are data-accurate repository previews of the validated page content, not pixel-exact Power BI Desktop exports. The PBIX remains the authoritative interactive artifact.
+These SVGs are repository-facing summaries that preserve the validated headline values and displayed ranking order. Their chart geometry is illustrative rather than a pixel-exact Power BI Desktop export; the PBIX remains the authoritative interactive artifact.
 
 The report uses a restrained charcoal, warm-white, muted-gold, sage, slate, and risk-red visual system so the work reads as **business intelligence and retail analytics**, not as a consumer jewelry advertisement.
 
