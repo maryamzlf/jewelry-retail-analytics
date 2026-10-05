@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/committed/outputs /tmp/committed/data
           cp outputs/*.csv /tmp/committed/outputs/
-          cp data/jewelry_clean.csv data/customer_rfm.csv /tmp/committed/data/
+          cp data/jewelry_clean.csv data/customer_rfm.csv data/sample_jewelry.csv /tmp/committed/data/
 
       - name: Download source dataset from Kaggle
         shell: bash
@@ -102,6 +102,11 @@ jobs:
               "/tmp/committed/data/customer_rfm.csv",
               "outputs/generated/customer_rfm.csv",
               dtype={"user_id": "string"},
+          )
+          compare_csv(
+              "/tmp/committed/data/sample_jewelry.csv",
+              "data/sample_jewelry.csv",
+              dtype=id_types,
           )
 
           output_files = [
