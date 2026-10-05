@@ -30,7 +30,7 @@ The completed Power BI report contains four pages: **Executive Overview**, **Pro
 - **5,352 source rows contain 11 physical fields instead of 13**; the Python ingestion layer reconstructs the missing positions before parsing so downstream fields do not shift into the wrong columns.
 - Product-master completeness is material: category code is missing on **15.94%** of rows and gemstone on **35.51%**.
 
-See [`docs/findings.md`](docs/findings.md) for the full business interpretation and recommendations.
+See [`docs/findings.md`](docs/findings.md) for the business interpretation and [`docs/validation_report.md`](docs/validation_report.md) for the current reproducibility and QA audit.
 
 ## Repository Previews of Power BI Pages
 
@@ -90,7 +90,9 @@ Exact duplicate groups are **flagged rather than blindly deleted** because ident
 
 ```text
 jewelry-retail-analytics/
-├── .github/workflows/sync-full-data.yml
+├── .github/workflows/
+│   ├── sync-full-data.yml
+│   └── quality.yml
 ├── data/
 │   ├── jewelry_clean.csv
 │   ├── customer_rfm.csv
@@ -98,7 +100,8 @@ jewelry-retail-analytics/
 ├── docs/
 │   ├── data_dictionary.md
 │   ├── methodology.md
-│   └── findings.md
+│   ├── findings.md
+│   └── validation_report.md
 ├── outputs/
 │   ├── kpi_summary.csv
 │   ├── annual_sales.csv
@@ -123,6 +126,8 @@ jewelry-retail-analytics/
 │   ├── 01_prepare_data.py
 │   ├── 02_eda_rfm.py
 │   └── 03_validate_outputs.py
+├── tests/
+│   └── test_analytics.py
 ├── sql/
 │   ├── 01_create_table.sql
 │   ├── 02_data_quality.sql
