@@ -149,6 +149,43 @@ jobs:
           for token in ["95,911", "5,352", "15.9%", "35.5%", "5.1%"]:
               assert token in quality, token
 
+          def assert_order(text, tokens):
+              positions = [text.index(token) for token in tokens]
+              assert positions == sorted(positions), (tokens, positions)
+
+          assert_order(
+              merch,
+              [">diamond</text>", ">Unknown</text>", ">topaz</text>", ">fianit</text>"],
+          )
+          assert_order(
+              customer,
+              [
+                  ">Champions</text>",
+                  ">At Risk</text>",
+                  ">Recent Customers</text>",
+                  ">Potential Loyalists</text>",
+                  ">Loyal Customers</text>",
+              ],
+          )
+          assert_order(
+              quality,
+              [">Earring</text>", ">Ring</text>", ">Unknown</text>", ">Bracelet</text>"],
+          )
+
+          readme = Path("README.md").read_text()
+          for token in [
+              "65.93%",
+              "98.54%",
+              "44.81%",
+              "80.42%",
+              "26.88%",
+              "45.03%",
+              "15.24%",
+              "15.94%",
+              "35.51%",
+          ]:
+              assert token in readme, token
+
           assert "NTILE(5)" not in sql_rfm
           assert "DATEDIFF_BIG(" in sql_rfm and "second" in sql_rfm
           assert "ROW_NUMBER() OVER (ORDER BY recency_days ASC, user_id ASC)" in sql_rfm
