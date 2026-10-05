@@ -1,6 +1,6 @@
 # Power BI Dashboard Previews
 
-These lightweight SVG files are **repository-facing visual summaries** of the four validated report pages. They follow the final report's titles, KPI values, layout direction, and visual system, but they are not pixel-exact exports from Power BI Desktop.
+These lightweight SVG files are **repository-facing visual summaries** of the four validated report pages. They preserve the validated headline values and displayed ranking order and follow the report's layout direction and visual system. Their chart geometry is illustrative; they are not pixel-exact exports from Power BI Desktop.
 
 - `01_executive_overview.svg` — Jewelry Retail Performance
 - `02_merchandising.svg` — Merchandising & Assortment
