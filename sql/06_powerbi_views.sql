@@ -57,8 +57,8 @@ WITH product_perf AS (
 SELECT
     p.product_id,
     cat.category_name,
-    met.metal,
-    gem_attr.gem,
+    COALESCE(met.metal, 'Unknown') AS metal,
+    COALESCE(gem_attr.gem, 'Unknown') AS gem,
     p.units,
     p.orders,
     p.revenue,
@@ -74,18 +74,20 @@ OUTER APPLY (
 ) cat
 OUTER APPLY (
     SELECT TOP (1)
-        COALESCE(s.metal, 'Unknown') AS metal
+        s.metal
     FROM dbo.jewelry_sales s
     WHERE s.product_id = p.product_id
-    GROUP BY COALESCE(s.metal, 'Unknown')
-    ORDER BY COUNT(*) DESC, COALESCE(s.metal, 'Unknown') ASC
+      AND s.metal IS NOT NULL
+    GROUP BY s.metal
+    ORDER BY COUNT(*) DESC, s.metal ASC
 ) met
 OUTER APPLY (
     SELECT TOP (1)
-        COALESCE(s.gem, 'Unknown') AS gem
+        s.gem
     FROM dbo.jewelry_sales s
     WHERE s.product_id = p.product_id
-    GROUP BY COALESCE(s.gem, 'Unknown')
-    ORDER BY COUNT(*) DESC, COALESCE(s.gem, 'Unknown') ASC
+      AND s.gem IS NOT NULL
+    GROUP BY s.gem
+    ORDER BY COUNT(*) DESC, s.gem ASC
 ) gem_attr;
 GO
