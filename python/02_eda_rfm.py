@@ -153,6 +153,9 @@ def create_customer_outputs(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
             monetary=("line_revenue", "sum"),
         )
     )
+    # Currency is scored at cent precision so Python monetary ordering
+    # matches the SQL DECIMAL aggregation at RFM tie boundaries.
+    customer["monetary"] = customer["monetary"].round(2)
     customer["customer_aov"] = customer["monetary"] / customer["frequency"]
 
     analysis_date = df["event_time"].max() + pd.Timedelta(days=1)
