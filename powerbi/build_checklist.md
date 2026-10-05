@@ -38,7 +38,7 @@ This checklist records the completed validation status of the Jewelry Retail Ana
 - [x] Hibernating = **9,766 customers / 7.35% of revenue**
 - [x] RFM documented as a fixed full-history snapshot
 - [x] RFM analysis date = one day after the maximum observed transaction timestamp
-- [x] SQL RFM scoring aligned with Python tie-to-even `np.rint()` behavior
+- [x] SQL RFM scoring aligned with Python elapsed-day recency, qcut boundary behavior, and tie-to-even `np.rint()` behavior
 
 ## Final Power BI report
 
