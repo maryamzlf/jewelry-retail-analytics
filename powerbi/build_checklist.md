@@ -116,7 +116,7 @@ Validated Desktop artifact: `Maryam_Jewelry_Portfolio_FINAL.pbix`
 - [x] Lightweight dashboard previews committed under `powerbi/screenshots/`
 - [x] README embeds Executive Overview near the top
 - [x] PBIX and Power BI cache/local state excluded from Git
-- [x] No unfinished TODO/checklist items remain in the release documentation
+- [x] No unfinished checklist items remain in the release documentation
 
 ## Optional future extensions
 
