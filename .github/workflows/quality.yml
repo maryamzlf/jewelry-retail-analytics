@@ -141,6 +141,8 @@ jobs:
           customer = Path("powerbi/screenshots/03_customer_retention.svg").read_text()
           quality = Path("powerbi/screenshots/04_data_quality.svg").read_text()
           sql_rfm = Path("sql/04_customer_analysis.sql").read_text()
+          sql_merch = Path("sql/05_merchandising_analysis.sql").read_text()
+          sql_views = Path("sql/06_powerbi_views.sql").read_text()
 
           for token in ["$33.18M", "74,760", "33,397", "$443.81", "26.9%"]:
               assert token in executive, token
@@ -195,6 +197,13 @@ jobs:
           assert "DATEDIFF_BIG(" in sql_rfm and "second" in sql_rfm
           assert "ROW_NUMBER() OVER (ORDER BY recency_days ASC, user_id ASC)" in sql_rfm
           assert "ROW_NUMBER() OVER (ORDER BY monetary ASC, user_id ASC)" in sql_rfm
+
+          for sql_text in [sql_merch, sql_views]:
+              assert "AND s.metal IS NOT NULL" in sql_text
+              assert "AND s.gem IS NOT NULL" in sql_text
+              assert "COALESCE(met.metal, 'Unknown') AS metal" in sql_text
+              assert "COALESCE(gem_attr.gem, 'Unknown') AS gem" in sql_text
+
           print("Portfolio preview KPIs and SQL/Python parity controls are aligned.")
           PY
 
