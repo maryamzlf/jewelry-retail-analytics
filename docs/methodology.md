@@ -48,7 +48,7 @@ RFM is calculated at customer level using:
 - **Frequency:** distinct order count.
 - **Monetary:** total customer revenue.
 
-Recency and monetary are scored by quintile. Frequency is intentionally **not** quintile-binned because 73% of customers have exactly one order, which would create arbitrary tie-breaking. Instead, frequency uses transparent business-rule bins: 1 order = score 1; 2 = 2; 3–4 = 3; 5–9 = 4; 10+ = 5. Frequency and monetary are averaged into an `FM` score and combined with recency into six interpretable segments: Champions, Loyal Customers, Recent Customers, Potential Loyalists, At Risk, and Hibernating.
+Recency and monetary are scored by quintile. Frequency is intentionally **not** quintile-binned because 73% of customers have exactly one order, which would create arbitrary tie-breaking. Instead, frequency uses transparent business-rule bins: 1 order = score 1; 2 = 2; 3–4 = 3; 5–9 = 4; 10+ = 5. Frequency and monetary are averaged into an `FM` score and combined with recency into six interpretable segments: Champions, Loyal Customers, Recent Customers, Potential Loyalists, At Risk, and Hibernating. The SQL implementation mirrors the Python elapsed-whole-day recency calculation and the exact rank-based quintile boundaries rather than using `DATEDIFF(day)` or `NTILE(5)`, which can differ at boundary rows.
 
 ## 6. Reconciliation
 
