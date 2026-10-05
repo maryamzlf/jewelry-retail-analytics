@@ -2,8 +2,8 @@
 
 **Audit date:** 2026-10-04  
 **Repository:** `maryamzlf/jewelry-retail-analytics`  
-**Validated source commit:** `9e7979af8b095f05753747c19f8124320c61de87`  
-**Final quality workflow:** run **#7** — success
+**Validated source commit:** `14a263289c051eed700ea07deab25db5cf4a1828`  
+**Final quality workflow:** run **#20** — success
 
 ## Scope
 
@@ -70,7 +70,17 @@ The preview now follows the validated order:
 3. topaz
 4. fianit
 
-### 3. Continuous validation
+### 3. Pipeline reproducibility and identifier integrity
+
+The analytics read path now keeps order, product, category, and customer identifiers explicitly as strings instead of allowing pandas to re-infer them. The small repository schema sample is regenerated directly from the validated clean table, so its field types stay aligned with the pipeline.
+
+The validated analytics environment is pinned to the exact package versions used by the final green build.
+
+### 4. SQL product-attribute parity
+
+Product-level representative `metal` and `gem` values now follow the same rule in SQL as in Python: missing values are excluded when choosing the modal known attribute, and `Unknown` is used only when no known value exists.
+
+### 5. Continuous validation
 
 A new `.github/workflows/quality.yml` workflow now runs:
 
@@ -83,13 +93,17 @@ A new `.github/workflows/quality.yml` workflow now runs:
 - SQL/Python parity checks;
 - unfinished-placeholder checks.
 
-The final workflow run completed successfully.
+The final workflow run completed successfully on run **#20**.
 
 ## Power BI validation scope
 
 The GitHub repository does not contain the PBIX binary, and no accessible copy of `Maryam_Jewelry_Portfolio_FINAL.pbix` was available in the connected file library during this audit. Therefore, this audit independently revalidated the **Power BI input tables, documented semantic assumptions, repository previews, KPI values, and preview rankings**, but did not reopen the PBIX binary itself.
 
 The historical Power BI QA record in `powerbi/build_checklist.md` remains the artifact-level record for the Desktop file.
+
+## Attribution / generated-content review
+
+No explicit model/vendor attribution, generated-by marker, placeholder prose, or unfinished implementation marker was found in the current visible project files. This does not prove how every line was authored; it means the repository does not contain an obvious attribution or generated-content artifact that would undermine the portfolio presentation.
 
 ## Result
 
