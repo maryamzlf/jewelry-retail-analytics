@@ -1,0 +1,170 @@
+name: analytics-quality
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/quality.yml'
+      - 'python/**'
+      - 'tests/**'
+      - 'sql/**'
+      - 'outputs/**'
+      - 'data/*.csv'
+      - 'docs/**'
+      - 'powerbi/**'
+      - 'README.md'
+      - 'requirements.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Python syntax check
+        run: python -m compileall -q python tests
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+      - name: Preserve committed analytical snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/committed/outputs /tmp/committed/data
+          cp outputs/*.csv /tmp/committed/outputs/
+          cp data/jewelry_clean.csv data/customer_rfm.csv /tmp/committed/data/
+
+      - name: Download source dataset from Kaggle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p data/raw /tmp/jewelry-source
+          curl -L --fail --retry 3 \
+            'https://www.kaggle.com/api/v1/datasets/download/mkechinov/ecommerce-purchase-history-from-jewelry-store' \
+            -o /tmp/jewelry-source.zip
+          unzip -q -o /tmp/jewelry-source.zip -d /tmp/jewelry-source
+          RAW_FILE="$(find /tmp/jewelry-source -type f -name '*.csv' | head -n 1)"
+          test -n "$RAW_FILE"
+          cp "$RAW_FILE" data/raw/jewelry.csv
+
+      - name: Rebuild full analytical pipeline
+        run: |
+          python python/01_prepare_data.py
+          python python/02_eda_rfm.py
+          python python/03_validate_outputs.py
+
+      - name: Compare regenerated outputs with committed portfolio data
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+
+          def compare_csv(expected_path, actual_path, dtype=None):
+              expected = pd.read_csv(expected_path, low_memory=False, dtype=dtype)
+              actual = pd.read_csv(actual_path, low_memory=False, dtype=dtype)
+              pd.testing.assert_frame_equal(
+                  expected,
+                  actual,
+                  check_dtype=False,
+                  check_exact=False,
+                  rtol=1e-12,
+                  atol=1e-9,
+              )
+
+          id_types = {
+              "order_id": "string",
+              "product_id": "string",
+              "category_id": "string",
+              "category_code": "string",
+              "user_id": "string",
+          }
+          compare_csv(
+              "/tmp/committed/data/jewelry_clean.csv",
+              "data/processed/jewelry_clean.csv",
+              dtype=id_types,
+          )
+          compare_csv(
+              "/tmp/committed/data/customer_rfm.csv",
+              "outputs/generated/customer_rfm.csv",
+              dtype={"user_id": "string"},
+          )
+
+          output_files = [
+              "kpi_summary.csv",
+              "annual_sales.csv",
+              "monthly_sales.csv",
+              "category_performance.csv",
+              "metal_performance.csv",
+              "gem_performance.csv",
+              "price_band_performance.csv",
+              "rfm_segment_summary.csv",
+              "top_products.csv",
+              "top_customers.csv",
+              "data_quality_summary.csv",
+          ]
+          for name in output_files:
+              compare_csv(
+                  Path("/tmp/committed/outputs") / name,
+                  Path("outputs") / name,
+              )
+          print("Committed portfolio tables match a clean rebuild from the public source.")
+          PY
+
+      - name: Validate portfolio previews and SQL parity controls
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          executive = Path("powerbi/screenshots/01_executive_overview.svg").read_text()
+          merch = Path("powerbi/screenshots/02_merchandising.svg").read_text()
+          customer = Path("powerbi/screenshots/03_customer_retention.svg").read_text()
+          quality = Path("powerbi/screenshots/04_data_quality.svg").read_text()
+          sql_rfm = Path("sql/04_customer_analysis.sql").read_text()
+
+          for token in ["$33.18M", "74,760", "33,397", "$443.81", "26.9%"]:
+              assert token in executive, token
+
+          for token in ["$345.94", "9,613", "80.4%", "diamond", "Unknown", "topaz", "fianit"]:
+              assert token in merch, token
+
+          for token in ["33,397", "8,976", "$993.48", "$5.06M", "$14.94M"]:
+              assert token in customer, token
+
+          for token in ["95,911", "5,352", "15.9%", "35.5%", "5.1%"]:
+              assert token in quality, token
+
+          assert "NTILE(5)" not in sql_rfm
+          assert "DATEDIFF_BIG(" in sql_rfm and "second" in sql_rfm
+          assert "ROW_NUMBER() OVER (ORDER BY recency_days ASC, user_id ASC)" in sql_rfm
+          assert "ROW_NUMBER() OVER (ORDER BY monetary ASC, user_id ASC)" in sql_rfm
+          print("Portfolio preview KPIs and SQL/Python parity controls are aligned.")
+          PY
+
+      - name: Scan visible project text for obvious AI or unfinished placeholders
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RniE \
+            'ChatGPT|OpenAI|Claude|Gemini|Copilot|AI-generated|generated by AI|as an AI|language model|lorem ipsum|TODO|FIXME' \
+            README.md docs powerbi python sql tests .github \
+            --exclude='*.csv'; then
+            echo 'Unexpected AI marker or unfinished placeholder found.'
+            exit 1
+          fi
+          echo 'No obvious AI attribution or unfinished placeholder markers found.'
