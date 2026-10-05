@@ -271,7 +271,17 @@ def main() -> None:
             f"Clean file not found: {INPUT_FILE}. Run 01_prepare_data.py first."
         )
 
-    df = pd.read_csv(INPUT_FILE, parse_dates=["event_time"])
+    df = pd.read_csv(
+        INPUT_FILE,
+        parse_dates=["event_time"],
+        dtype={
+            "order_id": "string",
+            "product_id": "string",
+            "category_id": "string",
+            "category_code": "string",
+            "user_id": "string",
+        },
+    )
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 
